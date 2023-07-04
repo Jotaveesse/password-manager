@@ -1,4 +1,3 @@
-
 <head>
   <meta charset="utf-8">
 
@@ -37,130 +36,62 @@
           <button id="encrypt-button">Encrypt</button>
           <button id="decrypt-button">Decrypt</button>
           <button id="display-button">Display</button>
+          <button id="extract-button">Extract</button>
         </div>
       </div>
     </div>
 
     <div id="json-section">
-      <div class="person-row">
-        <!--multiple lines possible-->
-        <div class="person-title">
-          Pessoa
-        </div>
-        <div class="person-dropdown">
-          V
-        </div>
-        <div class="person-accounts">
 
-          <div class="account-row">
-            <!--multiple lines possible-->
-            <div class="account-title">
-              Conta
-            </div>
-            <div class="account-data">
-
-              <div class="data-row">
-                <!--multiple lines possible-->
-                <div class="login-field">
-                  <span>Login:</span>
-                  <input type="password">
-                </div>
-                <div class="password-field">
-                  <span>Password:</span>
-                  <input type="password">
-                </div>
-              </div>
-
-              <div class="data-row">
-                <!--multiple lines possible-->
-                <div class="login-field">
-                  <span>Login2:</span>
-                  <input type="password">
-                </div>
-                <div class="password-field">
-                  <span>Password2:</span>
-                  <input type="password">
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="account-row">
-            <!--multiple lines possible-->
-            <div class="account-title">
-              Conta 2
-            </div>
-            <div class="account-data">
-
-              <div class="data-row">
-                <!--multiple lines possible-->
-                <div class="login-field">
-                  <span>Login:</span>
-                  <input type="password">
-                </div>
-                <div class="password-field">
-                  <span>Password:</span>
-                  <input type="password">
-                </div>
-              </div>
-
-              <div class="data-row">
-                <!--multiple lines possible-->
-                <div class="login-field">
-                  <span>Login2:</span>
-                  <input type="password">
-                </div>
-                <div class="password-field">
-                  <span>Password2:</span>
-                  <input type="password">
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="person-row">
-        <!--multiple lines possible-->
-        <div class="person-title">
-          Pessoa 2
-        </div>
-        <div class="person-dropdown">
-          V
-        </div>
-        <div class="person-accounts">
-
-          <div class="account-row">
-            <!--multiple lines possible-->
-            <div class="account-title">
-              Conta
-            </div>
-            <div class="account-data">
-
-              <div class="data-row">
-                <!--multiple lines possible-->
-                <div class="login-field">
-                  <span>Login:</span>
-                  <input type="password">
-                </div>
-                <div class="password-field">
-                  <span>Password:</span>
-                  <input type="password">
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-      </div>
     </div>
   </div>
+
 </body>
+
+<template id="person-template">
+  <div class="person-row">
+    <div class="person-title">
+      Pessoa
+    </div>
+
+    <div class="person-dropdown">
+      V
+    </div>
+
+    <div class="person-accounts">
+
+    </div>
+
+  </div>
+</template>
+
+<template id="account-template">
+  <div class="account-row">
+    <div class="account-title">
+      Conta
+    </div>
+
+    <div class="account-data">
+
+    </div>
+
+  </div>
+</template>
+
+<template id="login-template">
+  <div class="data-row">
+
+    <div class="login-field">
+      <span>Login:</span>
+      <input>
+    </div>
+
+    <div class="password-field">
+      <span>Password:</span>
+      <input type="password">
+    </div>
+
+  </div>
+</template>
 
 </html>
