@@ -85,12 +85,18 @@ window.onload = function () {
 		var jsonData = JSON.parse(outputArea.value)
 		console.log(jsonData);
 
-		jsonArea.innerHTML="";
+		jsonArea.innerHTML = "";
 		Object.keys(jsonData).forEach(person => {
 			var personElem = personTemp.content.cloneNode(true);
 			var personAccounts = personElem.querySelector(".person-accounts");
 			let title = personElem.querySelector(".person-title");
+
 			title.innerHTML = person;
+			title.ondblclick = editField;
+
+			var dropButton = personElem.querySelector(".dropdown-button");
+
+			dropButton.onclick = function () { toggleHideElem(personAccounts) };
 
 			jsonArea.appendChild(personElem);
 
@@ -98,7 +104,9 @@ window.onload = function () {
 				var accountElem = accountTemp.content.cloneNode(true);
 				var accountData = accountElem.querySelector(".account-data");
 				let title = accountElem.querySelector(".account-title");
+
 				title.innerHTML = account;
+				title.ondblclick = editField;
 
 				personAccounts.appendChild(accountElem);
 
@@ -135,17 +143,34 @@ window.onload = function () {
 				Array.from(accountData.children).forEach(loginElem => {
 					var loginField = loginElem.querySelector(".login-field");
 					var passwordField = loginElem.querySelector(".password-field");
-					
+
 					var loginInput = loginField.getElementsByTagName("input")[0];
 					var passwordInput = passwordField.getElementsByTagName("input")[0];
 
-					extractedJson[personTitle][accountTitle].push({"username":loginInput.value,"password":passwordInput.value});
+					extractedJson[personTitle][accountTitle].push({ "username": loginInput.value, "password": passwordInput.value });
 				});
 			});
 
-			
+
 		});
 		inputArea.value = JSON.stringify(extractedJson);
 	});
 };
 
+function toggleHideElem(elem) {
+	let isHidden = elem.style.display == "none";
+
+	elem.style.display = isHidden ? "" : "none";
+}
+
+function editField(){
+	var input = document.createElement("input");
+	input.value = this.innerHTML;
+	input.onblur = function () {
+		var val = this.value;
+		this.parentNode.innerHTML = val;
+	}
+	this.innerHTML = "";
+	this.appendChild(input);
+	input.focus();
+}
