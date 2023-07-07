@@ -96,7 +96,17 @@ window.onload = function () {
 
 			var dropButton = personElem.querySelector(".dropdown-button");
 
-			dropButton.onclick = function () { toggleHideElem(personAccounts) };
+			dropButton.onclick = function () { 
+				toggleHideElem(personAccounts);
+				let isRotated = dropButton.children[0].classList.contains("rotate180");
+
+				if (isRotated)
+					this.children[0].classList.remove("rotate180");
+				else
+					this.children[0].classList.add("rotate180");
+			};
+
+			dropButton.click();
 
 			jsonArea.appendChild(personElem);
 
