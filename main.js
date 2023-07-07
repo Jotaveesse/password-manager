@@ -1,5 +1,10 @@
-const encryptTemplate = '<nppcrypt version="1016">\n<encryption cipher="rijndael" key-length="32" mode="gcm" aad="true" encoding="base64" />\n<key algorithm="scrypt" N="16384" r="8" p="1" salt="salt_value" />\n<iv value="iv_value" method="random" /><tag value="tag_value" />\n</nppcrypt>\ncipher_value';
 const emptyData = { "Pessoa": { "Conta": [{ "username": "", "password": "" }] } };
+const encryptTemplate = `<nppcrypt version="1016">
+<encryption cipher="rijndael" key-length="32" mode="gcm" aad="true" encoding="base64" />
+<key algorithm="scrypt" N="16384" r="8" p="1" salt="salt_value" />
+<iv value="iv_value" method="random" /><tag value="tag_value" />
+</nppcrypt>
+cipher_value`;
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -14,16 +19,6 @@ var loginTemp;
 var progressBar;
 var bar;
 
-
-function updateProgressBar(progress) {
-	if (progress == 1)
-		progressBar.style.display = "none";
-	else {
-		progressBar.style.display = "block";
-		bar.style.width = (progress * 100) + "%";
-	}
-}
-
 window.onload = function () {
 	inputArea = document.getElementById("input-area");
 	passwordArea = document.getElementById("password-area");
@@ -35,7 +30,7 @@ window.onload = function () {
 	bar = document.getElementById("bar");
 	progressBar = document.getElementById("progress-bar");
 
-	document.getElementById("encrypt-button").addEventListener('click', function (ev) {
+	document.getElementById("encrypt-button").onclick = function () {
 		var inputStringBuffer = textEncoder.encode(inputArea.value);
 		var saltArrBuf = randBytes(16);
 		var ivArrBuf = randBytes(16);
@@ -56,9 +51,9 @@ window.onload = function () {
 				finalString = finalString.replace("cipher_value", arrayBufferToBase64(cipherArrBuf));
 				outputArea.value = finalString;
 			});
-	});
+	};
 
-	document.getElementById("decrypt-button").addEventListener('click', function (ev) {
+	document.getElementById("decrypt-button").onclick = function () {
 		var inputString = inputArea.value;
 		var xmlString = inputString.substring(0, inputString.indexOf("</nppcrypt>") + 11);
 		var cipherB64 = inputString.substring(inputString.indexOf("</nppcrypt>") + 11);
@@ -93,7 +88,7 @@ window.onload = function () {
 		decrypt(dataArrBuf, passwordArea.value, saltArrBuf, ivArrBuf, addiArrBuf).then((decr) => {
 			outputArea.value = decr;
 		});
-	});
+	};
 
 	document.getElementById("display-button").onclick = function () {
 		var jsonData = JSON.parse(outputArea.value)
@@ -103,38 +98,14 @@ window.onload = function () {
 		createPersonElem(jsonData, jsonArea);
 	};
 
+	document.getElementById("extract-button").onclick = function () {
+		var extractedJson = extractJson();
+		inputArea.value = JSON.stringify(extractedJson);
+	};
+
 	document.getElementById("new-person-button").onclick = function () {
 		createPersonElem(emptyData, jsonArea);
 	};
-
-	document.getElementById("extract-button").addEventListener('click', function (ev) {
-		var extractedJson = {};
-
-		Array.from(jsonArea.children).forEach(personElem => {
-			var personAccounts = personElem.querySelector(".person-accounts");
-			var personTitle = personElem.querySelector(".person-title").innerHTML;
-			extractedJson[personTitle] = {};
-
-			Array.from(personAccounts.children).forEach(accountElem => {
-				var accountData = accountElem.querySelector(".account-data");
-				var accountTitle = accountElem.querySelector(".account-title").innerHTML;
-				extractedJson[personTitle][accountTitle] = [];
-
-				Array.from(accountData.querySelectorAll(".data-row")).forEach(loginElem => {
-					var loginField = loginElem.querySelector(".login-field");
-					var passwordField = loginElem.querySelector(".password-field");
-
-					var loginInput = loginField.getElementsByTagName("input")[0];
-					var passwordInput = passwordField.getElementsByTagName("input")[0];
-
-					extractedJson[personTitle][accountTitle].push({ "username": loginInput.value, "password": passwordInput.value });
-				});
-			});
-
-
-		});
-		inputArea.value = JSON.stringify(extractedJson);
-	});
 };
 
 function createPersonElem(data, parent) {
@@ -142,31 +113,35 @@ function createPersonElem(data, parent) {
 		var personElem = personTemp.content.cloneNode(true);
 		var personAccounts = personElem.querySelector(".person-accounts");
 		var newAccountButton = personElem.querySelector(".new-button");
+		var dropButton = personElem.querySelector(".dropdown-button");
 		let title = personElem.querySelector(".person-title");
 
 		title.innerHTML = person;
 		title.ondblclick = editField;
 
-		var dropButton = personElem.querySelector(".dropdown-button");
-
+		//hides the accounts and flips the dropdown
 		dropButton.onclick = function () {
 			toggleHideElem(personAccounts);
 			toggleHideElem(newAccountButton);
-			let isRotated = dropButton.children[0].classList.contains("rotate180");
+
+			let buttonClasses = this.children[0].classList;
+			let isRotated = buttonClasses.contains("rotate180");
 
 			if (isRotated)
-				this.children[0].classList.remove("rotate180");
+				buttonClasses.remove("rotate180");
 			else
-				this.children[0].classList.add("rotate180");
+				buttonClasses.add("rotate180");
 		};
 
 		newAccountButton.onclick = function () {
 			createAccountElem(emptyData.Pessoa, personAccounts);
 		};
 
+		//clicks to hide the accounts initially
 		dropButton.click();
 
 		parent.appendChild(personElem);
+
 		createAccountElem(data[person], personAccounts);
 	});
 }
@@ -190,6 +165,7 @@ function createAccountElem(person, parent) {
 		createLoginElem(person[account], accountData);
 	});
 }
+
 function createLoginElem(account, parent) {
 	account.forEach(login => {
 		var loginElem = loginTemp.content.cloneNode(true);
@@ -202,26 +178,72 @@ function createLoginElem(account, parent) {
 
 		loginInput.value = login.username;
 		passwordInput.value = login.password;
+
+		//inserts before the new button
 		parent.insertBefore(loginElem, parent.querySelector(".new-button"));
 	});
 }
 
+function extractJson() {
+	var extractedJson = {};
+
+	//extracts each person
+	Array.from(jsonArea.children).forEach(personElem => {
+		var personAccounts = personElem.querySelector(".person-accounts");
+		var personTitle = personElem.querySelector(".person-title").innerHTML;
+		extractedJson[personTitle] = {};
+
+		//extracts each account
+		Array.from(personAccounts.children).forEach(accountElem => {
+			var accountData = accountElem.querySelector(".account-data");
+			var accountTitle = accountElem.querySelector(".account-title").innerHTML;
+			extractedJson[personTitle][accountTitle] = [];
+
+			//extracts each login
+			Array.from(accountData.querySelectorAll(".data-row")).forEach(loginElem => {
+				var loginField = loginElem.querySelector(".login-field");
+				var passwordField = loginElem.querySelector(".password-field");
+
+				var loginInput = loginField.getElementsByTagName("input")[0];
+				var passwordInput = passwordField.getElementsByTagName("input")[0];
+
+				extractedJson[personTitle][accountTitle].push({
+					"username": loginInput.value,
+					"password": passwordInput.value
+				});
+			});
+		});
+	});
+
+	return extractedJson;
+}
+
 function toggleHideElem(elem) {
 	let isHidden = elem.style.display == "none";
-
 	elem.style.display = isHidden ? "" : "none";
 }
 
 function editField() {
 	if (this.childElementCount == 0) {
 		var input = document.createElement("input");
+
 		input.value = this.innerHTML;
 		input.onblur = function () {
 			var val = this.value;
 			this.parentNode.innerHTML = val;
 		}
 		this.innerHTML = "";
+
 		this.appendChild(input);
 		input.focus();
+	}
+}
+
+function updateProgressBar(progress) {
+	if (progress == 1)
+		progressBar.style.display = "none";
+	else {
+		progressBar.style.display = "block";
+		bar.style.width = (progress * 100) + "%";
 	}
 }
