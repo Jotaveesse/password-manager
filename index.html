@@ -16,20 +16,27 @@
 <body>
   <div id="main">
     <div id="crypt-area">
+
       <div class="input-section">
         <div class="text-area-section">
           <div>Input text</div>
           <textarea id="input-area"></textarea>
         </div>
+
         <div class="password-section">
           <span>Password</span>
           <input id="password-area" type="password">
         </div>
       </div>
+
       <div class="output-section">
         <div class="text-area-section">
           <div>Output text</div>
           <textarea id="output-area"></textarea>
+        </div>
+
+        <div id="progress-bar" class="progress-bar">
+          <div id="bar" class="bar"></div>
         </div>
 
         <div class="button-section">
@@ -45,6 +52,9 @@
       <div id="json-section">
 
       </div>
+      <div id="new-person-button" class="new-button">
+        <img class="rotate180" src="images/plus.svg" />
+      </div>
     </div>
   </div>
 
@@ -57,12 +67,19 @@
     </div>
 
     <div class="person-dropdown">
-      <button class="dropdown-button"><img class="rotate180" src="down-arrow.svg" /></button>
+      <button class="dropdown-button">
+        <img class="rotate180" src="images/down-arrow.svg" />
+      </button>
     </div>
 
     <div class="person-accounts">
 
     </div>
+
+    <div class="new-button">
+      <img class="rotate180" src="images/plus.svg" />
+    </div>
+
 
   </div>
 </template>
@@ -74,7 +91,9 @@
     </div>
 
     <div class="account-data">
-
+      <div class="new-button">
+        <img class="rotate180" src="images/plus.svg" />
+      </div>
     </div>
 
   </div>

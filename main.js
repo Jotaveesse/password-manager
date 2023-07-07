@@ -1,4 +1,5 @@
 const encryptTemplate = '<nppcrypt version="1016">\n<encryption cipher="rijndael" key-length="32" mode="gcm" aad="true" encoding="base64" />\n<key algorithm="scrypt" N="16384" r="8" p="1" salt="salt_value" />\n<iv value="iv_value" method="random" /><tag value="tag_value" />\n</nppcrypt>\ncipher_value';
+const emptyData = { "Pessoa": { "Conta": [{ "username": "", "password": "" }] } };
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -10,6 +11,18 @@ var jsonArea;
 var personTemp;
 var accountTemp;
 var loginTemp;
+var progressBar;
+var bar;
+
+
+function updateProgressBar(progress) {
+	if (progress == 1)
+		progressBar.style.display = "none";
+	else {
+		progressBar.style.display = "block";
+		bar.style.width = (progress * 100) + "%";
+	}
+}
 
 window.onload = function () {
 	inputArea = document.getElementById("input-area");
@@ -19,7 +32,8 @@ window.onload = function () {
 	personTemp = document.getElementById("person-template");
 	accountTemp = document.getElementById("account-template");
 	loginTemp = document.getElementById("login-template");
-
+	bar = document.getElementById("bar");
+	progressBar = document.getElementById("progress-bar");
 
 	document.getElementById("encrypt-button").addEventListener('click', function (ev) {
 		var inputStringBuffer = textEncoder.encode(inputArea.value);
@@ -81,61 +95,17 @@ window.onload = function () {
 		});
 	});
 
-	document.getElementById("display-button").addEventListener('click', function (ev) {
+	document.getElementById("display-button").onclick = function () {
 		var jsonData = JSON.parse(outputArea.value)
-		console.log(jsonData);
+		//console.log(jsonData);
 
 		jsonArea.innerHTML = "";
-		Object.keys(jsonData).forEach(person => {
-			var personElem = personTemp.content.cloneNode(true);
-			var personAccounts = personElem.querySelector(".person-accounts");
-			let title = personElem.querySelector(".person-title");
+		createPersonElem(jsonData, jsonArea);
+	};
 
-			title.innerHTML = person;
-			title.ondblclick = editField;
-
-			var dropButton = personElem.querySelector(".dropdown-button");
-
-			dropButton.onclick = function () { 
-				toggleHideElem(personAccounts);
-				let isRotated = dropButton.children[0].classList.contains("rotate180");
-
-				if (isRotated)
-					this.children[0].classList.remove("rotate180");
-				else
-					this.children[0].classList.add("rotate180");
-			};
-
-			dropButton.click();
-
-			jsonArea.appendChild(personElem);
-
-			Object.keys(jsonData[person]).forEach(account => {
-				var accountElem = accountTemp.content.cloneNode(true);
-				var accountData = accountElem.querySelector(".account-data");
-				let title = accountElem.querySelector(".account-title");
-
-				title.innerHTML = account;
-				title.ondblclick = editField;
-
-				personAccounts.appendChild(accountElem);
-
-				jsonData[person][account].forEach(login => {
-					var loginElem = loginTemp.content.cloneNode(true);
-
-					var loginField = loginElem.querySelector(".login-field");
-					var passwordField = loginElem.querySelector(".password-field");
-
-					var loginInput = loginField.getElementsByTagName("input")[0];
-					var passwordInput = passwordField.getElementsByTagName("input")[0];
-
-					loginInput.value = login.username;
-					passwordInput.value = login.password;
-					accountData.appendChild(loginElem);
-				});
-			});
-		});
-	});
+	document.getElementById("new-person-button").onclick = function () {
+		createPersonElem(emptyData, jsonArea);
+	};
 
 	document.getElementById("extract-button").addEventListener('click', function (ev) {
 		var extractedJson = {};
@@ -150,7 +120,7 @@ window.onload = function () {
 				var accountTitle = accountElem.querySelector(".account-title").innerHTML;
 				extractedJson[personTitle][accountTitle] = [];
 
-				Array.from(accountData.children).forEach(loginElem => {
+				Array.from(accountData.querySelectorAll(".data-row")).forEach(loginElem => {
 					var loginField = loginElem.querySelector(".login-field");
 					var passwordField = loginElem.querySelector(".password-field");
 
@@ -167,20 +137,91 @@ window.onload = function () {
 	});
 };
 
+function createPersonElem(data, parent) {
+	Object.keys(data).forEach(person => {
+		var personElem = personTemp.content.cloneNode(true);
+		var personAccounts = personElem.querySelector(".person-accounts");
+		var newAccountButton = personElem.querySelector(".new-button");
+		let title = personElem.querySelector(".person-title");
+
+		title.innerHTML = person;
+		title.ondblclick = editField;
+
+		var dropButton = personElem.querySelector(".dropdown-button");
+
+		dropButton.onclick = function () {
+			toggleHideElem(personAccounts);
+			toggleHideElem(newAccountButton);
+			let isRotated = dropButton.children[0].classList.contains("rotate180");
+
+			if (isRotated)
+				this.children[0].classList.remove("rotate180");
+			else
+				this.children[0].classList.add("rotate180");
+		};
+
+		newAccountButton.onclick = function () {
+			createAccountElem(emptyData.Pessoa, personAccounts);
+		};
+
+		dropButton.click();
+
+		parent.appendChild(personElem);
+		createAccountElem(data[person], personAccounts);
+	});
+}
+
+function createAccountElem(person, parent) {
+	Object.keys(person).forEach(account => {
+		var accountElem = accountTemp.content.cloneNode(true);
+		var accountData = accountElem.querySelector(".account-data");
+		var newLoginButton = accountElem.querySelector(".new-button");
+		let title = accountElem.querySelector(".account-title");
+
+		title.innerHTML = account;
+		title.ondblclick = editField;
+
+		newLoginButton.onclick = function () {
+			createLoginElem(emptyData.Pessoa.Conta, accountData);
+		};
+
+		parent.appendChild(accountElem);
+
+		createLoginElem(person[account], accountData);
+	});
+}
+function createLoginElem(account, parent) {
+	account.forEach(login => {
+		var loginElem = loginTemp.content.cloneNode(true);
+
+		var loginField = loginElem.querySelector(".login-field");
+		var passwordField = loginElem.querySelector(".password-field");
+
+		var loginInput = loginField.getElementsByTagName("input")[0];
+		var passwordInput = passwordField.getElementsByTagName("input")[0];
+
+		loginInput.value = login.username;
+		passwordInput.value = login.password;
+		parent.insertBefore(loginElem, parent.querySelector(".new-button"));
+	});
+}
+
 function toggleHideElem(elem) {
 	let isHidden = elem.style.display == "none";
 
 	elem.style.display = isHidden ? "" : "none";
 }
 
-function editField(){
-	var input = document.createElement("input");
-	input.value = this.innerHTML;
-	input.onblur = function () {
-		var val = this.value;
-		this.parentNode.innerHTML = val;
+function editField() {
+	if (this.childElementCount == 0) {
+		var input = document.createElement("input");
+		input.value = this.innerHTML;
+		input.onblur = function () {
+			var val = this.value;
+			this.parentNode.innerHTML = val;
+		}
+		this.innerHTML = "";
+		this.appendChild(input);
+		input.focus();
 	}
-	this.innerHTML = "";
-	this.appendChild(input);
-	input.focus();
 }

@@ -13,9 +13,7 @@ async function derivate(password, salt) {
         r,
         p,
         dkLen,
-        function (progress) {
-            //console.log('Key derivation progress:', progress);
-        }
+        updateProgressBar
     )
         .then(async function (key) {
             derivatedKey = key;

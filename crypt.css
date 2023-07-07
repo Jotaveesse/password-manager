@@ -18,7 +18,7 @@ textarea {
     font-family: Helvetica;
     font-size: 0.75vw;
     width: 100%;
-    height: 80%;
+    height: 100%;
 }
 
 #main {
@@ -38,16 +38,33 @@ textarea {
 }
 
 .input-section {
-    height: 50%;
+    height: 45%;
     margin-bottom: 18px;
 }
 
 .output-section {
-    height: 50%;
+    height: 55%;
 }
 
 .text-area-section {
-    height: 80%;
+    height: 60%;
+    padding-bottom: 40px;
+}
+
+.progress-bar {
+    display: none;
+    width: 100%;
+    height: 28px;
+    background-color: #333;
+    position: relative;
+    margin-bottom: 2%;
+    border-radius: 10px;
+}
+
+.bar {
+    background-color: #444;
+    width: 0%;
+    height: 100%;
 }
 
 .password-section {
@@ -55,10 +72,16 @@ textarea {
     grid-template-columns: 100%;
 }
 
+.button-section {
+    height: 32px;
+}
+
 .button-section button {
     color: white;
     background-color: #333;
     border: none;
+    height: 100%;
+    width: 80px;
     padding: 8px;
     font-weight: 800;
     border-radius: 6px;
@@ -175,10 +198,6 @@ input {
     padding-top: 0px;
 }
 
-.account-row:last-child {
-    padding-bottom: 16px;
-}
-
 .account-title {
     background-color: #444;
     width: 25%;
@@ -204,7 +223,7 @@ input {
 }
 
 .data-row {
-    width: 100%;
+    width: 96%;
     background-color: transparent;
     display: flex;
     flex-wrap: nowrap;
@@ -229,6 +248,41 @@ input {
 .password-field span {
     padding-right: 6px;
     font-size: 0.8vw;
+}
+
+.new-button {
+    background-color: #333;
+    width: min-content;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 6px;
+    cursor: pointer;
+}
+
+.person-row .new-button {
+    background-color: #333;
+    margin: 2px 10px;
+}
+
+.person-row .new-button img {
+    height: 16px;
+}
+
+.account-row .new-button {
+    margin: auto 0px;
+    background-color: #444;
+}
+
+.account-row .new-button img {
+    height: 12px;
+}
+
+.new-button:hover {
+    background-color: #333;
+}
+
+.new-button img {
+    height: 18px
 }
 
 .rotate180 {
