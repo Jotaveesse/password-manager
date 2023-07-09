@@ -19,32 +19,41 @@
 
       <div class="input-section">
         <div class="text-area-section">
-          <div>Input text</div>
+          <div class="crypt-area-title">Input text</div>
           <textarea id="input-area"></textarea>
         </div>
 
         <div class="password-section">
-          <span>Password</span>
+          <div class="crypt-area-title">Password</div>
           <input id="password-area" type="password">
+
+          <button id="crypt-show-button" class="show-button" showing="false">
+            <img src="images/eye-open.svg" />
+          </button>
+
         </div>
+
       </div>
 
       <div class="output-section">
         <div class="text-area-section">
-          <div>Output text</div>
+          <div class="crypt-area-title">Output text</div>
           <textarea id="output-area"></textarea>
+        </div>
+
+        <div class="button-section">
+          <button id="encrypt-button">Encrypt</button>
+          <button id="display-button">Display</button>
         </div>
 
         <div id="progress-bar" class="progress-bar">
           <div id="bar" class="bar"></div>
         </div>
 
-        <div class="button-section">
-          <button id="encrypt-button">Encrypt</button>
-          <button id="decrypt-button">Decrypt</button>
-          <button id="display-button">Display</button>
-          <button id="extract-button">Extract</button>
+        <div id="error-message">
+          Erro
         </div>
+
       </div>
     </div>
 
@@ -66,7 +75,10 @@
       Pessoa
     </div>
 
-    <div class="person-dropdown">
+    <div class="person-buttons">
+      <button class="remove-button">
+        <img src="images/minus.svg" />
+      </button>
       <button class="dropdown-button">
         <img class="rotate180" src="images/down-arrow.svg" />
       </button>
@@ -86,8 +98,13 @@
 
 <template id="account-template">
   <div class="account-row">
-    <div class="account-title">
-      Conta
+    <div class="account-top">
+      <div class="account-title">
+        Conta
+      </div>
+      <button class="remove-button">
+        <img src="images/minus.svg" />
+      </button>
     </div>
 
     <div class="account-data">
@@ -110,7 +127,14 @@
     <div class="password-field">
       <span>Password</span>
       <input type="password">
+      <button class="show-button" showing="false">
+        <img src="images/eye-open.svg" />
+      </button>
     </div>
+
+    <button class="remove-button">
+      <img src="images/minus.svg" />
+    </button>
 
   </div>
 </template>
