@@ -36,7 +36,7 @@ textarea {
     font-family: Helvetica;
     font-size: 12px;
     width: 100%;
-    height: 80%;
+    height: calc(100% - 34px);
 }
 
 #main {
@@ -66,23 +66,50 @@ textarea {
 }
 
 .input-section {
-    height: 45%;
+    height: 50%;
     min-height: 250px;
+    padding-bottom: 16px;
+    box-sizing: border-box;
 }
 
 .output-section {
-    height: 55%;
+    height: 50%;
     min-height: 250px;
 }
 
 .text-area-section {
-    height: 70%;
-    /*! padding-bottom: 40px; */
+    height: 65%;
 }
 
 .crypt-area-title {
     padding-bottom: 8px;
     width: 100%;
+    height: 18px;
+}
+
+
+.file-input-section{
+    height:40px;
+    width:min-content;
+    /*! padding:10px 0px; */
+    margin-left:auto;
+    box-sizing: border-box;
+}
+
+#file-input{
+    height:100%;
+}
+
+#file-input::file-selector-button{
+    color: white;
+    background-color: #444;
+    height:100%;
+    border: none;
+    border-radius: 4px;
+    padding:4px;
+    font-weight: 800;
+    cursor: pointer;
+    box-sizing: border-box;
 }
 
 .progress-bar {
@@ -111,6 +138,8 @@ textarea {
 .password-section {
     display: flex;
     flex-wrap: wrap;
+    height: 22%;
+    align-content: flex-start;
 }
 
 #password-area{

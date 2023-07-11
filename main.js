@@ -9,6 +9,13 @@ cipher_value`;
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
+const Errors = {
+	WRONG_PASSWORD: "Wrong password",
+	CORRUPTED_CIPHER: "Corrupted cipher",
+	BAD_XML: "Badly formatted XML",
+	BAD_JSON: "Badly formatted JSON",
+}
+
 var inputArea;
 var passwordArea;
 var outputArea;
@@ -20,44 +27,65 @@ var progressBar;
 var bar;
 var errorMessage;
 
+var busy = false;
+
 window.onload = function () {
 	inputArea = document.getElementById("input-area");
 	passwordArea = document.getElementById("password-area");
 	outputArea = document.getElementById("output-area");
 	jsonArea = document.getElementById("json-section")
-	personTemp = document.getElementById("person-template");
-	accountTemp = document.getElementById("account-template");
-	loginTemp = document.getElementById("login-template");
+	fileInput = document.getElementById("file-input");
+
 	bar = document.getElementById("bar");
 	progressBar = document.getElementById("progress-bar");
 	errorMessage = document.getElementById("error-message");
 
+	personTemp = document.getElementById("person-template");
+	accountTemp = document.getElementById("account-template");
+	loginTemp = document.getElementById("login-template");
+
 	document.getElementById("encrypt-button").onclick = async function () {
-		errorMessage.style.display = "none";
-		var extractedJson = extractJson();
-		jsonData = JSON.stringify(extractedJson);
-		var encrData = await encryptDefault(jsonData, passwordArea.value);
-		outputArea.value = encrData;
+		if (!busy) {
+			busy = true;
+
+			errorMessage.style.display = "none";
+
+			var extractedJson = extractJson();
+			jsonData = JSON.stringify(extractedJson);
+
+			var encrData = await encryptDefault(jsonData, passwordArea.value);
+			outputArea.value = encrData;
+
+			busy = false;
+		}
 	};
 
 	document.getElementById("display-button").onclick = async function () {
-		errorMessage.style.display = "none";
-		var decrData = await decryptDefault(inputArea.value, passwordArea.value);
-		var jsonData;
+		if (!busy) {
+			busy = true;
 
-		if (decrData == undefined) {
-			displayError("Wrong password");
-		}
-		else {
-			try {
-				jsonData = JSON.parse(decrData);
-			} catch (error) {
-				errorMessage.innerHTML = "Badly formatted JSON";
-				errorMessage.style.display = "block";
-			} finally {
-				jsonArea.innerHTML = "";
-				createPersonElems(jsonData, jsonArea);
+			errorMessage.style.display = "none";
+
+			var decrData = await decryptDefault(inputArea.value, passwordArea.value);
+			var jsonData;
+
+			if (decrData == undefined) {
+				displayError(Errors.WRONG_PASSWORD);
 			}
+			else {
+				try {
+					jsonData = JSON.parse(decrData);
+				}
+				catch (error) {
+					displayError(Errors.BAD_JSON)
+				}
+				finally {
+					jsonArea.innerHTML = "";
+					createPersonElems(jsonData, jsonArea);
+				}
+			}
+
+			busy = false;
 		}
 	};
 
@@ -66,12 +94,14 @@ window.onload = function () {
 	};
 
 	document.getElementById("crypt-show-button").onclick = function () {
-		let isShowing = this.attributes.showing.value == "true";
-		this.children[0].src = isShowing ? "images/eye-open.svg" : "images/eye-closed.svg";
-		passwordArea.type = isShowing ? "password" : "text";
-
-		this.setAttribute("showing", !isShowing);
+		togglePassword(this, passwordArea);
 	};
+
+	fileInput.onchange = function () {
+		this.files[0].text().then(function (data) {
+			inputArea.value = data;
+		});
+	}
 };
 
 function createPersonElems(data, parent) {
@@ -81,10 +111,10 @@ function createPersonElems(data, parent) {
 		var newAccountButton = personElem.querySelector(".new-button");
 		var dropButton = personElem.querySelector(".dropdown-button");
 		var removeButton = personElem.querySelector(".remove-button");
-		let title = personElem.querySelector(".person-title");
+		let personTitle = personElem.querySelector(".person-title");
 
-		title.innerHTML = person;
-		title.ondblclick = editField;
+		personTitle.innerHTML = person;
+		personTitle.ondblclick = editField;
 
 		//hides the accounts and flips the dropdown
 		dropButton.onclick = function () {
@@ -123,10 +153,10 @@ function createAccountElems(person, parent) {
 		var accountData = accountElem.querySelector(".account-data");
 		var newLoginButton = accountElem.querySelector(".new-button");
 		var removeButton = accountElem.querySelector(".remove-button");
-		let title = accountElem.querySelector(".account-title");
+		let accountTitle = accountElem.querySelector(".account-title");
 
-		title.innerHTML = account;
-		title.ondblclick = editField;
+		accountTitle.innerHTML = account;
+		accountTitle.ondblclick = editField;
 
 		newLoginButton.onclick = function () {
 			createLoginElems(emptyData.Pessoa.Conta, accountData);
@@ -151,7 +181,6 @@ function createLoginElems(account, parent) {
 		var loginField = loginElem.querySelector(".login-field");
 		var passwordField = loginElem.querySelector(".password-field");
 
-
 		var loginInput = loginField.getElementsByTagName("input")[0];
 		var passwordInput = passwordField.getElementsByTagName("input")[0];
 
@@ -163,11 +192,7 @@ function createLoginElems(account, parent) {
 		};
 
 		showButton.onclick = function () {
-			let isShowing = this.attributes.showing.value == "true";
-			this.children[0].src = isShowing ? "images/eye-open.svg" : "images/eye-closed.svg";
-			passwordInput.type = isShowing ? "password" : "text";
-
-			this.setAttribute("showing", !isShowing);
+			togglePassword(this, passwordInput);
 		};
 
 		//inserts before the new button
@@ -209,74 +234,6 @@ function extractJson() {
 	return extractedJson;
 }
 
-async function encryptDefault(text, password) {
-	var encripted;
-	var inputStringBuffer = textEncoder.encode(text);
-	var saltArrBuf = randBytes(16);
-	var ivArrBuf = randBytes(16);
-	var addiData = new Uint8Array(saltArrBuf.length + ivArrBuf.length);
-
-	//additional data contains the salt and the iv
-	addiData.set(saltArrBuf);
-	addiData.set(ivArrBuf, saltArrBuf.length);
-
-	await encrypt(inputStringBuffer, password, saltArrBuf, ivArrBuf, addiData)
-		.then((encr) => {
-			var cipherArrBuf = encr.slice(0, encr.byteLength - 16);
-			var tagArrBuf = encr.slice(encr.byteLength - 16);
-			var finalString = encryptTemplate.replace("salt_value", arrayBufferToBase64(saltArrBuf));
-
-			finalString = finalString.replace("iv_value", arrayBufferToBase64(ivArrBuf));
-			finalString = finalString.replace("tag_value", arrayBufferToBase64(tagArrBuf));
-			finalString = finalString.replace("cipher_value", arrayBufferToBase64(cipherArrBuf));
-			encripted = finalString;
-		});
-	return encripted;
-}
-
-async function decryptDefault(text, password) {
-	var decrypted;
-	var xmlString = text.substring(0, text.indexOf("</nppcrypt>") + 11);
-	var cipherB64 = text.substring(text.indexOf("</nppcrypt>") + 11);
-
-	var parser = new DOMParser();
-	var xmlDoc;
-
-	xmlDoc = parser.parseFromString(xmlString, "text/xml");
-
-	if (xmlDoc.activeElement.tagName == "parsererror") {
-		displayError("Badly formatted XML");
-	}
-	else {
-		try {
-			//xml nodes
-			var keyNode = xmlDoc.getElementsByTagName("key")[0];
-			var ivNode = xmlDoc.getElementsByTagName("iv")[0];
-			var tagNode = xmlDoc.getElementsByTagName("tag")[0];
-
-			var saltB64 = keyNode.getAttribute("salt");
-			var ivB64 = ivNode.getAttribute("value");
-			var tagB64 = tagNode.getAttribute("value");
-			var addiB64 = joinBase64(saltB64, ivB64);	//additional data contains salt and the iv
-
-			var saltArrBuf = base64ToArrayBuffer(saltB64)
-			var ivArrBuf = base64ToArrayBuffer(ivB64)
-			var addiArrBuf = base64ToArrayBuffer(addiB64);
-
-			var dataArrBuf = base64ToArrayBuffer(joinBase64(cipherB64, tagB64));
-
-			await decrypt(dataArrBuf, password, saltArrBuf, ivArrBuf, addiArrBuf).then((decr) => {
-				decrypted = decr;
-			});
-		}
-		catch {
-			displayError("Corrupted cipher");
-		}
-
-		return decrypted;
-	}
-}
-
 function toggleHideElem(elem) {
 	let isHidden = elem.style.display == "none";
 	elem.style.display = isHidden ? "" : "none";
@@ -296,6 +253,14 @@ function editField() {
 		this.appendChild(input);
 		input.focus();
 	}
+}
+
+function togglePassword(self, elem) {
+	let isShowing = self.attributes.showing.value == "true";
+	self.children[0].src = isShowing ? "images/eye-open.svg" : "images/eye-closed.svg";
+	elem.type = isShowing ? "password" : "text";
+
+	self.setAttribute("showing", !isShowing);
 }
 
 function updateProgressBar(progress) {
