@@ -44,6 +44,10 @@ window.onload = function () {
 	accountTemp = document.getElementById("account-template");
 	loginTemp = document.getElementById("login-template");
 
+	document.getElementById("save-button").onclick = async function () {
+		download(outputArea.value, "data.txt", "txt")
+	};
+
 	document.getElementById("encrypt-button").onclick = async function () {
 		if (!busy) {
 			busy = true;
@@ -74,14 +78,12 @@ window.onload = function () {
 			}
 			else {
 				try {
+					jsonArea.innerHTML = "";
 					jsonData = JSON.parse(decrData);
+					createPersonElems(jsonData, jsonArea);
 				}
 				catch (error) {
 					displayError(Errors.BAD_JSON)
-				}
-				finally {
-					jsonArea.innerHTML = "";
-					createPersonElems(jsonData, jsonArea);
 				}
 			}
 
@@ -106,12 +108,12 @@ window.onload = function () {
 
 function createPersonElems(data, parent) {
 	Object.keys(data).forEach(person => {
-		var personElem = personTemp.content.cloneNode(true);
-		var personAccounts = personElem.querySelector(".person-accounts");
-		var newAccountButton = personElem.querySelector(".new-button");
-		var dropButton = personElem.querySelector(".dropdown-button");
-		var removeButton = personElem.querySelector(".remove-button");
-		let personTitle = personElem.querySelector(".person-title");
+		const personElem = personTemp.content.cloneNode(true);
+		const personAccounts = personElem.querySelector(".person-accounts");
+		const newAccountButton = personElem.querySelector(".new-button");
+		const dropButton = personElem.querySelector(".dropdown-button");
+		const removeButton = personElem.querySelector(".remove-button");
+		const personTitle = personElem.querySelector(".person-title");
 
 		personTitle.innerHTML = person;
 		personTitle.ondblclick = editField;
@@ -149,11 +151,11 @@ function createPersonElems(data, parent) {
 
 function createAccountElems(person, parent) {
 	Object.keys(person).forEach(account => {
-		var accountElem = accountTemp.content.cloneNode(true);
-		var accountData = accountElem.querySelector(".account-data");
-		var newLoginButton = accountElem.querySelector(".new-button");
-		var removeButton = accountElem.querySelector(".remove-button");
-		let accountTitle = accountElem.querySelector(".account-title");
+		const accountElem = accountTemp.content.cloneNode(true);
+		const accountData = accountElem.querySelector(".account-data");
+		const newLoginButton = accountElem.querySelector(".new-button");
+		const removeButton = accountElem.querySelector(".remove-button");
+		const accountTitle = accountElem.querySelector(".account-title");
 
 		accountTitle.innerHTML = account;
 		accountTitle.ondblclick = editField;
@@ -174,15 +176,15 @@ function createAccountElems(person, parent) {
 
 function createLoginElems(account, parent) {
 	account.forEach(login => {
-		var loginElem = loginTemp.content.cloneNode(true);
+		const loginElem = loginTemp.content.cloneNode(true);
 
-		var removeButton = loginElem.querySelector(".remove-button");
-		var showButton = loginElem.querySelector(".show-button");
-		var loginField = loginElem.querySelector(".login-field");
-		var passwordField = loginElem.querySelector(".password-field");
+		const removeButton = loginElem.querySelector(".remove-button");
+		const showButton = loginElem.querySelector(".show-button");
+		const loginField = loginElem.querySelector(".login-field");
+		const passwordField = loginElem.querySelector(".password-field");
 
-		var loginInput = loginField.getElementsByTagName("input")[0];
-		var passwordInput = passwordField.getElementsByTagName("input")[0];
+		const loginInput = loginField.getElementsByTagName("input")[0];
+		const passwordInput = passwordField.getElementsByTagName("input")[0];
 
 		loginInput.value = login.username;
 		passwordInput.value = login.password;
@@ -201,27 +203,27 @@ function createLoginElems(account, parent) {
 }
 
 function extractJson() {
-	var extractedJson = {};
+	const extractedJson = {};
 
 	//extracts each person
 	Array.from(jsonArea.children).forEach(personElem => {
-		var personAccounts = personElem.querySelector(".person-accounts");
-		var personTitle = personElem.querySelector(".person-title").innerHTML;
+		const personAccounts = personElem.querySelector(".person-accounts");
+		const personTitle = personElem.querySelector(".person-title").innerHTML;
 		extractedJson[personTitle] = {};
 
 		//extracts each account
 		Array.from(personAccounts.children).forEach(accountElem => {
-			var accountData = accountElem.querySelector(".account-data");
-			var accountTitle = accountElem.querySelector(".account-title").innerHTML;
+			const accountData = accountElem.querySelector(".account-data");
+			const accountTitle = accountElem.querySelector(".account-title").innerHTML;
 			extractedJson[personTitle][accountTitle] = [];
 
 			//extracts each login
 			Array.from(accountData.querySelectorAll(".data-row")).forEach(loginElem => {
-				var loginField = loginElem.querySelector(".login-field");
-				var passwordField = loginElem.querySelector(".password-field");
+				const loginField = loginElem.querySelector(".login-field");
+				const passwordField = loginElem.querySelector(".password-field");
 
-				var loginInput = loginField.getElementsByTagName("input")[0];
-				var passwordInput = passwordField.getElementsByTagName("input")[0];
+				const loginInput = loginField.getElementsByTagName("input")[0];
+				const passwordInput = passwordField.getElementsByTagName("input")[0];
 
 				extractedJson[personTitle][accountTitle].push({
 					"username": loginInput.value,
@@ -241,7 +243,7 @@ function toggleHideElem(elem) {
 
 function editField() {
 	if (this.childElementCount == 0) {
-		var input = document.createElement("input");
+		const input = document.createElement("input");
 
 		input.value = this.innerHTML;
 		input.onblur = function () {
@@ -277,4 +279,22 @@ function displayError(err) {
 		errorMessage.innerHTML = err;
 		errorMessage.style.display = "block";
 	}
+}
+
+function download(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
 }
