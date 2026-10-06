@@ -1,13 +1,13 @@
 import IconButton from "./IconButton.tsx";
 import ImagePlus from "../assets/plus.svg";
-import { useData, type Credentials } from "../DataContext.tsx";
+import { useData, type Credential } from "../DataContext.tsx";
 import Overlay, { type OverlayProps } from "react-bootstrap/esm/Overlay";
 import Popover from "react-bootstrap/esm/Popover";
 import BackupCodesRow from "./BackupCodeRow.tsx";
 import UpdatingPopover from "./UpdatingPopover.tsx";
 
 interface BackupCodesPopoverProps extends React.HTMLAttributes<HTMLElement> {
-    credentials: Credentials | null;
+    credential: Credential | null;
     target: HTMLElement | null;
     onClose?: () => void;
 }
@@ -29,7 +29,7 @@ const popperConfig: OverlayProps["popperConfig"] = {
 };
 
 const BackupCodesPopover = ({
-    credentials,
+    credential,
     target,
     className,
     style,
@@ -41,7 +41,7 @@ const BackupCodesPopover = ({
     return (
         <Overlay
             target={target}
-            show={!!credentials && !!target}
+            show={!!credential && !!target}
             placement="left-start"
             rootClose
             rootCloseEvent="mousedown"
@@ -75,7 +75,7 @@ const BackupCodesPopover = ({
                             overflowY: "auto",
                         }}
                     >
-                        {credentials?.backupCodes.map((backupCode) => (
+                        {credential?.backupCodes.map((backupCode) => (
                             <BackupCodesRow
                                 key={backupCode.id}
                                 backupCode={backupCode}
@@ -89,7 +89,7 @@ const BackupCodesPopover = ({
                         outerPadding={false}
                         variant="secondary"
                         onClick={() =>
-                            credentials && createBackupCode(credentials)
+                            credential && createBackupCode(credential)
                         }
                     />
                 </Popover.Body>

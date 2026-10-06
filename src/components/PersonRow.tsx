@@ -1,4 +1,4 @@
-import type { Credentials, Person } from "../DataContext.tsx";
+import type { Credential, Person } from "../DataContext.tsx";
 import IconButton from "./IconButton.tsx";
 import ImagePlus from "../assets/plus.svg";
 import ImageMinus from "../assets/minus.svg";
@@ -11,7 +11,7 @@ import { useData } from "../DataContext";
 
 interface PersonRowProps extends React.HTMLAttributes<HTMLElement> {
     person: Person;
-    onSeeCodes?: (credential: Credentials, target: HTMLElement) => void;
+    onSeeCodes?: (credential: Credential, target: HTMLElement) => void;
 }
 
 const PersonRow = ({

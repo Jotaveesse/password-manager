@@ -6,7 +6,7 @@ import PasswordInput from "./components/PasswordInput";
 import FileInput from "./components/FileInput";
 import TextArea from "./components/TextArea";
 import PersonRow from "./components/PersonRow";
-import { useData, type Credentials, type Data } from "./DataContext";
+import { useData, type Credential, type Data } from "./DataContext";
 import { decryptText, encryptText } from "./crypter";
 import BackupCodesPopover from "./components/BackupCodePopover";
 import { useIdleTimeout } from "./useIdleTimeout";
@@ -23,7 +23,7 @@ function App() {
         createPerson,
         clearData,
     } = useData();
-    const [selectedCredentialsId, setSelectedCredentialsId] = useState<
+    const [selectedCredentialId, setSelectedCredentialId] = useState<
         string | null
     >(null);
 
@@ -32,7 +32,7 @@ function App() {
     const lock = () => {
         clearData();
         setPasswordInput("");
-        setSelectedCredentialsId(null);
+        setSelectedCredentialId(null);
     };
 
     useIdleTimeout(
@@ -54,18 +54,18 @@ function App() {
         currentData.people.length > 0,
     );
 
-    const handleSeeCodes = (credential: Credentials, target: HTMLElement) => {
-        if (credential.id === selectedCredentialsId) {
-            setSelectedCredentialsId(null);
+    const handleSeeCodes = (credential: Credential, target: HTMLElement) => {
+        if (credential.id === selectedCredentialId) {
+            setSelectedCredentialId(null);
             return;
         }
         setPopupAnchor(target);
-        setSelectedCredentialsId(credential.id);
+        setSelectedCredentialId(credential.id);
     };
 
     const handleClosePopup = () => {
         setPopupAnchor(null);
-        setSelectedCredentialsId(null);
+        setSelectedCredentialId(null);
     };
 
     const handleFileUpload = function (e: React.ChangeEvent<HTMLInputElement>) {
@@ -247,11 +247,11 @@ function App() {
             </div>
 
             <BackupCodesPopover
-                credentials={
+                credential={
                     currentData.people
                         .flatMap((p) => p.accounts)
                         .flatMap((a) => a.credentials)
-                        .find((c) => c.id === selectedCredentialsId) ?? null
+                        .find((c) => c.id === selectedCredentialId) ?? null
                 }
                 target={popupAnchor}
                 onClose={handleClosePopup}

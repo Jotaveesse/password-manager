@@ -1,15 +1,15 @@
-import type { Account, Credentials } from "../DataContext.tsx";
+import type { Account, Credential } from "../DataContext.tsx";
 import IconButton from "./IconButton.tsx";
 import ImagePlus from "../assets/plus.svg";
 import ImageMinus from "../assets/minus.svg";
 import React, { useEffect, useRef, useState } from "react";
 import { useData } from "../DataContext.tsx";
 import { Form } from "react-bootstrap";
-import CredentialsRow from "./CredentialsRow.tsx";
+import CredentialRow from "./CredentialRow.tsx";
 
 interface AccountRowProps extends React.HTMLAttributes<HTMLElement> {
     account: Account;
-    onSeeCodes?: (credential: Credentials, target: HTMLElement) => void;
+    onSeeCodes?: (credential: Credential, target: HTMLElement) => void;
 }
 
 const AccountRow = ({
@@ -19,7 +19,7 @@ const AccountRow = ({
     style,
     ...rest
 }: AccountRowProps) => {
-    const { updateAccountName, removeAccount, createCredentials } = useData();
+    const { updateAccountName, removeAccount, createCredential } = useData();
     const [editingName, setEditingName] = useState(false);
     const accountNameInput = useRef<HTMLInputElement>(null);
     const accountNameText = useRef<HTMLDivElement>(null);
@@ -91,9 +91,9 @@ const AccountRow = ({
                     }
 
                     return (
-                        <CredentialsRow
+                        <CredentialRow
                             key={credential.id}
-                            credentials={credential}
+                            credential={credential}
                             onSeeCodes={onSeeCodes}
                             style={{ borderRadius: dynamicRadius }}
                         />
@@ -102,9 +102,9 @@ const AccountRow = ({
             </div>
             <IconButton
                 className={`rounded-top-0 ${account.credentials.length === 0 ? "me-auto" : "ms-auto"}`}
-                title="Add New Credentials"
+                title="Add New Credential"
                 icon={ImagePlus}
-                onClick={() => createCredentials(account)}
+                onClick={() => createCredential(account)}
             ></IconButton>
         </div>
     );

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { FORMAT_VERSION } from "./crypter";
 
-export type Credentials = {
+export type Credential = {
     id: string;
     username: string;
     password: string;
@@ -13,7 +13,7 @@ export type BackupCode = {
     code: string;
 };
 
-export type Account = { id: string; name: string; credentials: Credentials[] };
+export type Account = { id: string; name: string; credentials: Credential[] };
 export type Person = { id: string; name: string; accounts: Account[] };
 export type Data = { version: number; people: Person[] };
 
@@ -22,7 +22,7 @@ const emptyData: Data = {
     version: FORMAT_VERSION,
 };
 
-type EditableCredentialField = Exclude<keyof Credentials, "id">;
+type EditableCredentialField = Exclude<keyof Credential, "id">;
 
 // 2. Define the Context structure
 interface DataContextType {
@@ -32,18 +32,18 @@ interface DataContextType {
     clearData: () => void;
     removePerson: (person: Person) => void;
     removeAccount: (account: Account) => void;
-    removeCredentials: (credential: Credentials) => void;
+    removeCredential: (credential: Credential) => void;
     removeBackupCode: (backupCode: BackupCode) => void;
     createPerson: () => void;
     createAccount: (person: Person) => void;
-    createCredentials: (account: Account) => void;
-    createBackupCode: (credential: Credentials) => void;
+    createCredential: (account: Account) => void;
+    createBackupCode: (credential: Credential) => void;
     updatePersonName: (person: Person, newName: string) => void;
     updateAccountName: (account: Account, newName: string) => void;
     updateCredential: <K extends EditableCredentialField>(
-        credential: Credentials,
+        credential: Credential,
         field: K,
-        value: Credentials[K],
+        value: Credential[K],
     ) => void;
     updateBackupCode: (backupCode: BackupCode, newCode: string) => void;
 }
@@ -54,7 +54,7 @@ interface DataContextType {
 
 const generateId = (): string => crypto.randomUUID();
 
-const makeCredential = (): Credentials => ({
+const makeCredential = (): Credential => ({
     id: generateId(),
     username: "",
     password: "",
@@ -146,7 +146,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         }));
     };
 
-    const createCredentials = (account: Account) => {
+    const createCredential = (account: Account) => {
         const newCredential = makeCredential();
         setCurrentData((prev) =>
             mapAccounts(prev, (acc) =>
@@ -160,7 +160,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         );
     };
 
-    const createBackupCode = (credential: Credentials) => {
+    const createBackupCode = (credential: Credential) => {
         const newBackupCode: BackupCode = {
             id: generateId(),
             code: "",
@@ -215,7 +215,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         }));
     };
 
-    const removeCredentials = (credential: Credentials) => {
+    const removeCredential = (credential: Credential) => {
         setCurrentData((prev) =>
             mapAccounts(prev, (acc) =>
                 acc.credentials.some((c) => c.id === credential.id)
@@ -231,7 +231,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const removeBackupCode = (backupCode: BackupCode) => {
-        const hasCode = (c: Credentials) =>
+        const hasCode = (c: Credential) =>
             c.backupCodes.some((b) => b.id === backupCode.id);
 
         setCurrentData((prev) =>
@@ -277,9 +277,9 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const updateCredential = <K extends EditableCredentialField>(
-        credential: Credentials,
+        credential: Credential,
         field: K,
-        value: Credentials[K],
+        value: Credential[K],
     ) => {
         setCurrentData((prev) =>
             mapAccounts(prev, (acc) =>
@@ -298,7 +298,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const updateBackupCode = (backupCode: BackupCode, newCode: string) => {
-        const hasCode = (c: Credentials) =>
+        const hasCode = (c: Credential) =>
             c.backupCodes.some((b) => b.id === backupCode.id);
 
         setCurrentData((prev) =>
@@ -333,11 +333,11 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                 clearData,
                 createPerson,
                 createAccount,
-                createCredentials,
+                createCredential,
                 createBackupCode,
                 removePerson,
                 removeAccount,
-                removeCredentials,
+                removeCredential: removeCredential,
                 removeBackupCode,
                 updatePersonName,
                 updateAccountName,

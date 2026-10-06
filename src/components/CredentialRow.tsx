@@ -1,23 +1,23 @@
 import IconButton from "./IconButton.tsx";
 import ImageSafe from "../assets/safe.svg";
 import ImageMinus from "../assets/minus.svg";
-import { useData, type Credentials as Credentials } from "../DataContext.tsx";
+import { useData, type Credential as Credential } from "../DataContext.tsx";
 import TextInput from "./TextInput.tsx";
 import PasswordInput from "./PasswordInput.tsx";
 import CopyButton from "./CopyButton.tsx";
 
-interface CredentialsRowProps extends React.HTMLAttributes<HTMLDivElement> {
-    credentials: Credentials;
-    onSeeCodes?: (credential: Credentials, target: HTMLElement) => void;
+interface CredentialRowProps extends React.HTMLAttributes<HTMLDivElement> {
+    credential: Credential;
+    onSeeCodes?: (credential: Credential, target: HTMLElement) => void;
 }
 
-const CredentialsRow = ({
-    credentials,
+const CredentialRow = ({
+    credential: credentials,
     onSeeCodes,
     className,
     ...rest
-}: CredentialsRowProps) => {
-    const { updateCredential, removeCredentials } = useData();
+}: CredentialRowProps) => {
+    const { updateCredential, removeCredential: removeCredentials } = useData();
 
     return (
         <div
@@ -70,4 +70,4 @@ const CredentialsRow = ({
     );
 };
 
-export default CredentialsRow;
+export default CredentialRow;
