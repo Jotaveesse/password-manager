@@ -16,6 +16,8 @@ function App() {
     const [passwordInput, setPasswordInput] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [timeLeft, setTimeLeft] = useState("05:00");
+    const [fileName, setFileName] = useState<string | null>(null);
+
     const {
         currentData,
         setCurrentData,
@@ -79,6 +81,7 @@ function App() {
             const text = event.target?.result;
 
             if (typeof text === "string") {
+                setFileName(file.name);
                 setTextInput(text);
             }
         };
@@ -96,6 +99,7 @@ function App() {
             download(encryptedText);
         } catch (error) {
             console.error("Encryption error:", error);
+
             setErrorMessage(
                 String(error instanceof Error ? error.message : error) ||
                     "Encryption failed.",
@@ -120,6 +124,9 @@ function App() {
 
             setCurrentData(jsonData);
             sortCurrentData(); //TODO sort the json data itself before updating data
+
+            setTextInput("");
+            setFileName(null);
         } catch (error) {
             setErrorMessage(
                 String(error instanceof Error ? error.message : error) ||
@@ -160,7 +167,8 @@ function App() {
 
                         <FileInput
                             className="ms-auto w-50"
-                            accept=".txt"
+                            fileName={fileName}
+                            accept=".txt, .json"
                             onChange={handleFileUpload}
                         />
 
