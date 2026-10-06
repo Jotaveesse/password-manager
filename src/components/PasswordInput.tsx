@@ -7,6 +7,7 @@ import { useState } from "react";
 interface PasswordInputProps extends React.HTMLAttributes<HTMLElement> {
     title?: string;
     value: string;
+    placeholder?: string;
     horizontalLayout?: boolean;
     variant?: "primary" | "secondary";
     className?: string;
@@ -16,6 +17,7 @@ interface PasswordInputProps extends React.HTMLAttributes<HTMLElement> {
 const PasswordInput = ({
     value,
     title,
+    placeholder,
     horizontalLayout = false,
     variant = "primary",
     className,
@@ -58,6 +60,7 @@ const PasswordInput = ({
                     value={value}
                     type={showingPassword ? "text" : "password"}
                     autoComplete="off"
+                    placeholder={placeholder}
                     onChange={onChange}
                 />
 

@@ -13,7 +13,6 @@ import { useIdleTimeout } from "./useIdleTimeout";
 
 function App() {
     const [textInput, setTextInput] = useState("");
-    const [textOutput, setTextOutput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [timeLeft, setTimeLeft] = useState("05:00");
@@ -83,14 +82,14 @@ function App() {
         reader.readAsText(file);
     };
 
-    const handleEncryptButtonClick = async () => {
+    const handleEncryptDownloadButtonClick = async () => {
         try {
             setErrorMessage("");
 
             const jsonData = JSON.stringify(currentData);
             const encryptedText = await encryptText(jsonData, passwordInput);
 
-            setTextOutput(encryptedText);
+            download(encryptedText);
         } catch (error) {
             console.error("Encryption error:", error);
             setErrorMessage(
@@ -125,8 +124,8 @@ function App() {
         }
     };
 
-    const handleDownloadButtonClick = () => {
-        const blob = new Blob([textOutput], { type: "text/plain" });
+    const download = (textToDownload: string) => {
+        const blob = new Blob([textToDownload], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement("a");
@@ -145,7 +144,6 @@ function App() {
                 className="bg-primary d-flex column-gap-3 p-3 vh-100 vw-100 text-white fw-bold"
             >
                 <div
-                    id="crypt-area"
                     className="d-flex flex-column row-gap-2"
                     style={{ width: "40%" }}
                 >
@@ -165,35 +163,29 @@ function App() {
                             title="Password"
                             value={passwordInput}
                             variant="secondary"
+                            placeholder="Decryption and encryption password"
                             onChange={(e) => setPasswordInput(e.target.value)}
                         ></PasswordInput>
                     </div>
 
-                    <div className="flex-grow-1 d-flex flex-column row-gap-2">
-                        <TextArea
-                            value={textOutput}
-                            onChange={(e) => setTextOutput(e.target.value)}
-                            label="Output text"
-                        ></TextArea>
-
-                        <div className="d-flex ms-auto column-gap-2">
+                    <div className="d-flex flex-column row-gap-2 mt-2">
+                        <div className="d-flex column-gap-2 justify-content-around fs-4">
                             <Button
+                                title="Decrypt the input text using the password"
+                                className="fs-6"
                                 variant="secondary"
                                 onClick={handleDecryptButtonClick}
                             >
                                 Decrypt
                             </Button>
+
                             <Button
+                                title="Encrypt the current data using the password and download it"
+                                className="fs-6"
                                 variant="secondary"
-                                onClick={handleEncryptButtonClick}
+                                onClick={handleEncryptDownloadButtonClick}
                             >
                                 Encrypt
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                onClick={handleDownloadButtonClick}
-                            >
-                                Download
                             </Button>
                         </div>
 
