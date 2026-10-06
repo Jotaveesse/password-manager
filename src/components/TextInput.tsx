@@ -43,6 +43,7 @@ const TextInput = ({
                     className={`flex-grow-1 border-0 text-white py-1 px-2 fs-6 fw-medium ${wrapperVariant}`}
                     value={value}
                     type="text"
+                    style={{ minWidth: "8rem" }}
                     onChange={onChange}
                 />
             </Form.Group>

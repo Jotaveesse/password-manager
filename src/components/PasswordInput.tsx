@@ -54,6 +54,7 @@ const PasswordInput = ({
             <Form.Group className="d-flex flex-grow-1 column-gap-2">
                 <Form.Control
                     className={`flex-grow-1 border-0 text-white py-1 px-2 fs-6 fw-medium ${wrapperVariant}`}
+                    style={{ minWidth: "8rem" }}
                     value={value}
                     type={showingPassword ? "text" : "password"}
                     autoComplete="off"
