@@ -156,6 +156,7 @@ function App() {
 
                         <FileInput
                             className="ms-auto w-50"
+                            accept=".txt"
                             onChange={handleFileUpload}
                         />
 
