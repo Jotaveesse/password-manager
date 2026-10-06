@@ -1,53 +1,60 @@
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 
-interface FileInputProps extends React.TextareaHTMLAttributes<HTMLInputElement> {
-    className?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+type FileInputProps = Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "type" | "value" | "hidden"
+>;
+
+const NO_FILE = "No file selected";
 
 const FileInput = ({ className, onChange, ...rest }: FileInputProps) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [fileName, setFileName] = useState("No file selected.");
+    const inputRef = useRef<HTMLInputElement>(null);
+    const nameId = useId();
+    const [fileName, setFileName] = useState(NO_FILE);
 
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
-    };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
+        setFileName(file.name);
 
-        if (files && files.length > 0) {
-            const name = files[0].name;
+        // The parent must read e.target.files synchronously, before the reset below
+        onChange?.(e);
 
-            setFileName(name);
-
-            if (onChange) onChange(e);
-        }
+        // Clear the input so choosing the same file again still fires onChange
+        e.target.value = "";
     };
 
     return (
-        <Form.Group
-            className={`d-flex p-1 bg-secondary rounded-3 column-gap-2 ${className}`}
-            {...rest}
+        <div
+            className={`d-flex p-1 bg-secondary rounded-3 column-gap-2 ${className ?? ""}`}
         >
-            <Form.Control
-                className="bg-secondary text-white fw-bold border-0"
-                ref={fileInputRef}
+            <input
+                {...rest}
+                ref={inputRef}
                 type="file"
-                onChange={handleFileChange}
-                style={{ display: "none" }}
+                hidden
+                onChange={handleChange}
             />
 
-            <Button variant="primary" onClick={handleButtonClick}>
+            <Button
+                variant="primary"
+                aria-describedby={nameId}
+                onClick={() => inputRef.current?.click()}
+            >
                 Browse...
             </Button>
 
-            <Form.Text className="flex-grow-1 mt-auto mb-auto align-items-center bg-secondary fw-bold text-white text-truncate d-inline-block">
+            <span
+                id={nameId}
+                title={fileName}
+                aria-live="polite"
+                className="flex-grow-1 align-self-center fw-bold text-white text-truncate"
+            >
                 {fileName}
-            </Form.Text>
-        </Form.Group>
+            </span>
+        </div>
     );
 };
 
