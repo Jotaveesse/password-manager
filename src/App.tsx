@@ -17,6 +17,9 @@ function App() {
     const [errorMessage, setErrorMessage] = useState("");
     const [timeLeft, setTimeLeft] = useState("05:00");
     const [fileName, setFileName] = useState<string | null>(null);
+    const [newlyCreatedPersonId, setNewlyCreatedPersonId] = useState<
+        string | null
+    >(null);
 
     const {
         currentData,
@@ -231,6 +234,9 @@ function App() {
                         <div className="d-flex flex-column row-gap-2 overflow-y-scroll">
                             {currentData.people.map((person) => (
                                 <PersonRow
+                                    defaultExpanded={
+                                        person.id === newlyCreatedPersonId
+                                    }
                                     key={person.id}
                                     person={person}
                                     onSeeCodes={handleSeeCodes}
@@ -248,7 +254,8 @@ function App() {
                             if (currentData.people.length === 0) {
                                 setTimeLeft("05:00");
                             }
-                            createPerson();
+                            const newPersonId = createPerson();
+                            setNewlyCreatedPersonId(newPersonId);
                         }}
                     ></IconButton>
                 </div>

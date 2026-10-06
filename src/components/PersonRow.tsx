@@ -1,16 +1,16 @@
-import type { Credential, Person } from "../DataContext.tsx";
+import { useState } from "react";
 import IconButton from "./IconButton.tsx";
+import EditableLabel from "./EditableLabel.tsx";
+import AccountRow from "./AccountRow.tsx";
 import ImagePlus from "../assets/plus.svg";
 import ImageMinus from "../assets/minus.svg";
 import DownArrow from "../assets/down-arrow.svg";
 import UpArrow from "../assets/up-arrow.svg";
-import React, { useState, useRef, useEffect } from "react";
-import AccountRow from "./AccountRow.tsx";
-import { Form } from "react-bootstrap";
-import { useData } from "../DataContext";
+import { useData, type Credential, type Person } from "../DataContext.tsx";
 
-interface PersonRowProps extends React.HTMLAttributes<HTMLElement> {
+interface PersonRowProps extends React.HTMLAttributes<HTMLDivElement> {
     person: Person;
+    defaultExpanded?: boolean;
     onSeeCodes?: (credential: Credential, target: HTMLElement) => void;
 }
 
@@ -18,74 +18,54 @@ const PersonRow = ({
     person,
     onSeeCodes,
     className,
-    style,
+    defaultExpanded,
     ...rest
 }: PersonRowProps) => {
-    const [expanded, setExpanded] = useState("New Person" === person.name);
-    const [editingName, setEditingName] = useState(false);
-    const personNameInput = useRef<HTMLInputElement>(null);
-    const personNameText = useRef<HTMLDivElement>(null);
+    const [expanded, setExpanded] = useState(defaultExpanded);
 
     const { updatePersonName, removePerson, createAccount } = useData();
 
-    const handleExpandClick = function () {
-        setExpanded(!expanded);
-    };
-
-    const handlePersonDoubleClick = function () {
-        setEditingName(true);
-    };
-
-    useEffect(() => {
-        if (editingName) {
-            personNameInput.current?.focus();
-            personNameText.current?.blur();
+    const handleRemove = () => {
+        const name = person.name || "this person";
+        if (
+            window.confirm(
+                `Remove ${name} and all of their accounts and credentials?`,
+            )
+        ) {
+            removePerson(person);
         }
-    }, [editingName]);
-
-    const handlePersonBlur = function () {
-        setEditingName(false);
     };
 
     return (
         <div
-            className="w-100 d-flex flex-column row-gap-1 bg-secondary p-2 rounded-3"
+            className={`w-100 d-flex flex-column row-gap-1 bg-secondary p-2 rounded-3 ${className ?? ""}`}
             {...rest}
         >
             <div className="d-flex">
-                <Form.Control
-                    type="text"
-                    ref={personNameInput}
+                <EditableLabel
                     value={person.name}
-                    className="bg-primary fs-5 p-1 border-0 rounded-3 h-75 m-auto text-white fw-bold"
-                    style={{ display: editingName ? "block" : "none" }}
-                    onBlur={handlePersonBlur}
-                    onChange={(e) => updatePersonName(person, e.target.value)}
-                ></Form.Control>
-
-                <div
-                    ref={personNameText}
-                    className="flex-grow-1 fs-5 mt-auto mb-auto ms-1"
-                    style={{ display: editingName ? "none" : "block" }}
-                    onDoubleClick={handlePersonDoubleClick}
-                >
-                    {person.name}
-                </div>
+                    onChange={(name) => updatePersonName(person, name)}
+                    label="Person name"
+                    fallback="Unnamed person"
+                    inputClassName="bg-primary fs-5 p-1 border-0 rounded-3 h-75 m-auto text-white fw-bold"
+                    textClassName="flex-grow-1 fs-5 mt-auto mb-auto ms-1"
+                />
 
                 <div className="d-flex">
                     <IconButton
                         icon={ImageMinus}
                         title="Remove Person"
                         variant="secondary"
-                        onClick={() => removePerson(person)}
-                    ></IconButton>
+                        onClick={handleRemove}
+                    />
 
                     <IconButton
                         icon={expanded ? UpArrow : DownArrow}
-                        title="Expand/Collapse"
+                        title={expanded ? "Collapse" : "Expand"}
+                        aria-expanded={expanded}
                         variant="secondary"
-                        onClick={handleExpandClick}
-                    ></IconButton>
+                        onClick={() => setExpanded((open) => !open)}
+                    />
                 </div>
             </div>
 
@@ -97,7 +77,7 @@ const PersonRow = ({
                                 key={account.id}
                                 account={account}
                                 onSeeCodes={onSeeCodes}
-                            ></AccountRow>
+                            />
                         ))}
                     </div>
 
@@ -107,7 +87,7 @@ const PersonRow = ({
                         variant="secondary"
                         outerPadding={false}
                         onClick={() => createAccount(person)}
-                    ></IconButton>
+                    />
                 </>
             )}
         </div>

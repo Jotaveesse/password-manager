@@ -1,10 +1,9 @@
-import { useState } from "react";
-import Form from "react-bootstrap/Form";
 import IconButton from "./IconButton.tsx";
 import ImagePlus from "../assets/plus.svg";
 import ImageMinus from "../assets/minus.svg";
 import { useData, type Account, type Credential } from "../DataContext.tsx";
 import CredentialRow from "./CredentialRow.tsx";
+import EditableLabel from "./EditableLabel.tsx";
 
 interface AccountRowProps extends React.HTMLAttributes<HTMLDivElement> {
     account: Account;
@@ -29,10 +28,6 @@ const AccountRow = ({
     ...rest
 }: AccountRowProps) => {
     const { updateAccountName, removeAccount, createCredential } = useData();
-    const [editingName, setEditingName] = useState(false);
-
-    const startEditing = () => setEditingName(true);
-    const stopEditing = () => setEditingName(false);
 
     const hasCredentials = account.credentials.length > 0;
 
@@ -41,36 +36,14 @@ const AccountRow = ({
             <div
                 className={`d-flex w-50 bg-primary rounded-top-3 ${hasCredentials ? "" : "rounded-end-3"}`}
             >
-                {editingName ? (
-                    <Form.Control
-                        autoFocus
-                        type="text"
-                        aria-label="Account name"
-                        value={account.name}
-                        className="bg-secondary p-1 ms-1 border-0 rounded-2 h-50 m-auto text-white fw-bold"
-                        onFocus={(e) => e.target.select()}
-                        onBlur={stopEditing}
-                        onChange={(e) =>
-                            updateAccountName(account, e.target.value)
-                        }
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") stopEditing();
-                        }}
-                    />
-                ) : (
-                    <button
-                        type="button"
-                        title="Double-click (or press Enter) to rename"
-                        className="flex-grow-1 mt-auto mb-auto ms-2 p-0 border-0 bg-transparent text-start text-reset fw-bold"
-                        style={{ cursor: "text" }}
-                        onDoubleClick={startEditing}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") startEditing();
-                        }}
-                    >
-                        {account.name || "Untitled account"}
-                    </button>
-                )}
+                <EditableLabel
+                    value={account.name}
+                    onChange={(name) => updateAccountName(account, name)}
+                    label="Account name"
+                    fallback="Unnamed account"
+                    inputClassName="bg-secondary p-1 ms-1 border-0 rounded-2 h-50 m-auto text-white fw-bold"
+                    textClassName="flex-grow-1 mt-auto mb-auto ms-2 p-0 border-0 bg-transparent text-start text-reset fw-bold"
+                />
 
                 <IconButton
                     title="Remove Account"

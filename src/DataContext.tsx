@@ -34,7 +34,7 @@ interface DataContextType {
     removeAccount: (account: Account) => void;
     removeCredential: (credential: Credential) => void;
     removeBackupCode: (backupCode: BackupCode) => void;
-    createPerson: () => void;
+    createPerson: () => string;
     createAccount: (person: Person) => void;
     createCredential: (account: Account) => void;
     createBackupCode: (credential: Credential) => void;
@@ -132,6 +132,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
             ...prev,
             people: [...prev.people, newPerson],
         }));
+
+        return newPerson.id;
     };
 
     const createAccount = (person: Person) => {
