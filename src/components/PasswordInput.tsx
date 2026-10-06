@@ -4,14 +4,12 @@ import IconButton from "./IconButton";
 import ImageEyeOpen from "../assets/eye-open.svg";
 import ImageEyeClosed from "../assets/eye-closed.svg";
 
-// `type` is omitted on purpose: this component controls show/hide itself.
-// className and style apply to the outer wrapper; everything else goes to the <input>.
 interface PasswordInputProps extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
     "type" | "size"
 > {
     label?: string;
-    value: string; // required: always a controlled input
+    value: string;
     horizontalLayout?: boolean;
     variant?: "primary" | "secondary";
 }
