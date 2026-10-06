@@ -1,52 +1,60 @@
+import { useId } from "react";
 import Form from "react-bootstrap/Form";
 
-interface TextInputProps extends React.HTMLAttributes<HTMLElement> {
-    title?: string;
+type TextInputProps = Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "size"
+> & {
+    label?: string;
     value: string;
     horizontalLayout?: boolean;
-    className?: string;
     variant?: "primary" | "secondary";
-    onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-}
+    size?: "sm" | "lg";
+};
+
+const HORIZONTAL = "d-flex flex-row align-items-center column-gap-2";
+const VERTICAL = "d-flex flex-column";
 
 const TextInput = ({
-    value,
-    title,
+    label,
+    id,
     horizontalLayout = false,
     variant = "primary",
     className,
-    onChange,
+    style,
+    children,
     ...rest
 }: TextInputProps) => {
-    const horizontalClassName =
-        "d-flex flex-row align-items-center column-gap-2";
-    const verticalClassName = "d-flex flex-column";
-    const wrapperVariant =
-        variant === "primary" ? "bg-primary" : "bg-secondary";
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+
+    const variantClass = variant === "primary" ? "bg-primary" : "bg-secondary";
 
     return (
         <Form.Group
-            className={
-                (horizontalLayout ? horizontalClassName : verticalClassName) +
-                " " +
-                className
-            }
-            {...rest}
+            controlId={inputId}
+            className={`${horizontalLayout ? HORIZONTAL : VERTICAL} ${className ?? ""}`}
+            style={style}
         >
-            <Form.Label
-                className={`fw-bold text-white ${horizontalLayout && "mb-0"}`}
-            >
-                {title}
-            </Form.Label>
-            <Form.Group className="flex-grow-1 d-flex column-gap-2">
+            {label && (
+                <Form.Label
+                    className={`fw-bold text-white ${horizontalLayout ? "mb-0" : ""}`}
+                >
+                    {label}
+                </Form.Label>
+            )}
+
+            <div className="d-flex flex-grow-1 column-gap-2">
                 <Form.Control
-                    className={`flex-grow-1 border-0 text-white py-1 px-2 fs-6 fw-medium ${wrapperVariant}`}
-                    value={value}
-                    type="text"
+                    className={`flex-grow-1 border-0 text-white py-1 px-2 fs-6 fw-medium ${variantClass}`}
                     style={{ minWidth: "8rem" }}
-                    onChange={onChange}
+                    type="text" // callers can override, e.g. type="email"
+                    autoComplete="off"
+                    spellCheck={false}
+                    {...rest}
                 />
-            </Form.Group>
+                {children}
+            </div>
         </Form.Group>
     );
 };

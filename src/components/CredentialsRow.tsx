@@ -37,7 +37,7 @@ const CredentialsRow = ({
         <div className="bg-primary pt-1 pb-1 ps-2 pe-0" {...rest}>
             <div className="d-flex">
                 <TextInput
-                    title="Login"
+                    label="Login"
                     value={credentials.username}
                     horizontalLayout={true}
                     variant="secondary"
