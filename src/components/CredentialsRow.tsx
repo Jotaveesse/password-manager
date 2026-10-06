@@ -1,12 +1,11 @@
 import IconButton from "./IconButton.tsx";
-import ImageCopy from "../assets/copy.svg";
-import ImageCheckSquare from "../assets/check-square.svg";
 import ImageSafe from "../assets/safe.svg";
 import ImageMinus from "../assets/minus.svg";
-import React, { useState } from "react";
+import React from "react";
 import { useData, type Credentials } from "../DataContext.tsx";
 import TextInput from "./TextInput.tsx";
 import PasswordInput from "./PasswordInput.tsx";
+import CopyButton from "./CopyButton.tsx";
 
 interface CredentialsRowProps extends React.HTMLAttributes<HTMLElement> {
     credentials: Credentials;
@@ -20,18 +19,6 @@ const CredentialsRow = ({
     ...rest
 }: CredentialsRowProps) => {
     const { updateCredential, removeCredentials } = useData();
-    const [copied, setCopied] = useState(false);
-
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(credentials.password);
-
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error("Failed to copy text: ", err);
-        }
-    };
 
     return (
         <div className="bg-primary pt-1 pb-1 ps-2 pe-0" {...rest}>
@@ -67,11 +54,10 @@ const CredentialsRow = ({
                 ></PasswordInput>
 
                 <div className="d-flex">
-                    <IconButton
-                        title={copied ? "Copied" : "Copy Password"}
-                        icon={copied ? ImageCheckSquare : ImageCopy}
-                        onClick={handleCopy}
-                    ></IconButton>
+                    <CopyButton
+                        textToCopy={credentials.password}
+                        title="Copy Password"
+                    />
 
                     <IconButton
                         title="See Backup Codes"
