@@ -153,7 +153,7 @@ function App() {
                         <TextArea
                             value={textInput}
                             onChange={(e) => setTextInput(e.target.value)}
-                            title="Input text"
+                            label="Input text"
                         ></TextArea>
 
                         <FileInput
@@ -173,7 +173,7 @@ function App() {
                         <TextArea
                             value={textOutput}
                             onChange={(e) => setTextOutput(e.target.value)}
-                            title="Output text"
+                            label="Output text"
                         ></TextArea>
 
                         <div className="d-flex ms-auto column-gap-2">
