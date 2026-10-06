@@ -9,6 +9,8 @@ interface PasswordInputProps extends Omit<
     "type" | "size"
 > {
     label?: string;
+    showButtonTitle?: string;
+    hideButtonTitle?: string;
     value: string;
     horizontalLayout?: boolean;
     variant?: "primary" | "secondary";
@@ -21,6 +23,8 @@ const PasswordInput = ({
     label,
     id,
     horizontalLayout = false,
+    showButtonTitle = "Show Password",
+    hideButtonTitle = "Hide Password",
     variant = "primary",
     className,
     style,
@@ -57,7 +61,7 @@ const PasswordInput = ({
                 />
 
                 <IconButton
-                    title={showingPassword ? "Hide Password" : "Show Password"}
+                    title={showingPassword ? hideButtonTitle : showButtonTitle}
                     icon={showingPassword ? ImageEyeOpen : ImageEyeClosed}
                     outerPadding={false}
                     onClick={() => setShowingPassword((show) => !show)}

@@ -24,6 +24,8 @@ const BackupCodesRow = ({
                 aria-label="Backup code"
                 value={backupCode.code}
                 style={{ minWidth: "20rem" }}
+                showButtonTitle="Show Backup Code"
+                hideButtonTitle="Hide Backup Code"
                 onChange={(e) => updateBackupCode(backupCode, e.target.value)}
             />
 
