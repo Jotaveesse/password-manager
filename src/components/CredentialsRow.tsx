@@ -62,6 +62,7 @@ const CredentialsRow = ({
                     <IconButton
                         title="See Backup Codes"
                         icon={ImageSafe}
+                        onMouseDown={(e) => e.stopPropagation()}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                             if (onSeeCodes) {
                                 onSeeCodes(credentials, e.currentTarget);

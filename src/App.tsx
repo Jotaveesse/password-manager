@@ -8,7 +8,7 @@ import TextArea from "./components/TextArea";
 import PersonRow from "./components/PersonRow";
 import { useData, type Credentials, type Data } from "./DataContext";
 import { decryptText, encryptText } from "./crypter";
-import BackupCodes from "./components/BackupCodes";
+import BackupCodesPopover from "./components/BackupCodePopover";
 import { useIdleTimeout } from "./useIdleTimeout";
 
 function App() {
@@ -55,6 +55,10 @@ function App() {
     );
 
     const handleSeeCodes = (credential: Credentials, target: HTMLElement) => {
+        if (credential.id === selectedCredentialsId) {
+            setSelectedCredentialsId(null);
+            return;
+        }
         setPopupAnchor(target);
         setSelectedCredentialsId(credential.id);
     };
@@ -242,7 +246,7 @@ function App() {
                 </div>
             </div>
 
-            <BackupCodes
+            <BackupCodesPopover
                 credentials={
                     currentData.people
                         .flatMap((p) => p.accounts)
@@ -251,7 +255,7 @@ function App() {
                 }
                 target={popupAnchor}
                 onClose={handleClosePopup}
-            ></BackupCodes>
+            ></BackupCodesPopover>
         </>
     );
 }
