@@ -52,7 +52,7 @@ const CredentialsRow = ({
                 ></TextInput>
 
                 <PasswordInput
-                    title="Password"
+                    label="Password"
                     value={credentials.password}
                     horizontalLayout={true}
                     variant="secondary"

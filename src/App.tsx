@@ -160,7 +160,7 @@ function App() {
                         />
 
                         <PasswordInput
-                            title="Password"
+                            label="Password"
                             value={passwordInput}
                             variant="secondary"
                             placeholder="Decryption and encryption password"
