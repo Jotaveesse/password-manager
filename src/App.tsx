@@ -1,25 +1,48 @@
 import { useState } from "react";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 import IconButton from "./components/IconButton";
 import ImagePlus from "./assets/plus.svg";
 import PasswordInput from "./components/PasswordInput";
 import FileInput from "./components/FileInput";
 import TextArea from "./components/TextArea";
 import PersonRow from "./components/PersonRow";
+import IdleCountdown from "./components/IdleCountdown";
+import BackupCodesPopover from "./components/BackupCodePopover";
 import { useData, type Credential, type Data } from "./DataContext";
 import { decryptText, encryptText } from "./crypter";
-import BackupCodesPopover from "./components/BackupCodePopover";
-import { useIdleTimeout } from "./useIdleTimeout";
+
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
+
+const download = (text: string) => {
+    const blob = new Blob([text], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+
+    link.download = `vault.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // revoke after the browser has had time to start the download
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
 
 function App() {
     const [textInput, setTextInput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [timeLeft, setTimeLeft] = useState("05:00");
     const [fileName, setFileName] = useState<string | null>(null);
     const [newlyCreatedPersonId, setNewlyCreatedPersonId] = useState<
         string | null
     >(null);
+
+    //one piece of state, so the open credential and its anchor element can never get out of sync.
+    const [openCodes, setOpenCodes] = useState<{
+        credentialId: string;
+        anchor: HTMLElement;
+    } | null>(null);
 
     const {
         currentData,
@@ -28,74 +51,53 @@ function App() {
         createPerson,
         clearData,
     } = useData();
-    const [selectedCredentialId, setSelectedCredentialId] = useState<
-        string | null
-    >(null);
 
-    const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
+    const hasData = currentData.people.length > 0;
+
+    const selectedCredential = openCodes
+        ? (currentData.people
+              .flatMap((p) => p.accounts)
+              .flatMap((a) => a.credentials)
+              .find((c) => c.id === openCodes.credentialId) ?? null)
+        : null;
 
     const lock = () => {
         clearData();
         setPasswordInput("");
-        setSelectedCredentialId(null);
+        setOpenCodes(null);
+        setNewlyCreatedPersonId(null);
     };
-
-    useIdleTimeout(
-        lock,
-        (timeLeft) => {
-            const totalSeconds = Math.max(0, timeLeft / 1000);
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = Math.floor(totalSeconds % 60);
-
-            const formattedMinutes = String(minutes.toFixed(0)).padStart(
-                2,
-                "0",
-            );
-            const formattedSeconds = seconds.toFixed(0).padStart(2, "0");
-
-            setTimeLeft(`${formattedMinutes}:${formattedSeconds}`);
-        },
-        5 * 60 * 1000,
-        currentData.people.length > 0,
-    );
 
     const handleSeeCodes = (credential: Credential, target: HTMLElement) => {
-        if (credential.id === selectedCredentialId) {
-            setSelectedCredentialId(null);
-            return;
-        }
-        setPopupAnchor(target);
-        setSelectedCredentialId(credential.id);
+        setOpenCodes((current) =>
+            current?.credentialId === credential.id
+                ? null
+                : { credentialId: credential.id, anchor: target },
+        );
     };
 
-    const handleClosePopup = () => {
-        setPopupAnchor(null);
-        setSelectedCredentialId(null);
-    };
-
-    const handleFileUpload = function (e: React.ChangeEvent<HTMLInputElement>) {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-
         if (!file) return;
 
-        const reader = new FileReader();
+        if (file.size > MAX_FILE_BYTES) {
+            setErrorMessage("That file is too large to be a vault.");
+            return;
+        }
 
-        reader.onload = (event: ProgressEvent<FileReader>) => {
-            const text = event.target?.result;
-
-            if (typeof text === "string") {
-                setFileName(file.name);
-                setTextInput(text);
-            }
-        };
-
-        reader.readAsText(file);
+        try {
+            setErrorMessage("");
+            setTextInput(await file.text());
+            setFileName(file.name);
+        } catch {
+            setErrorMessage("Could not read the file.");
+        }
     };
 
     const handleEncryptDownloadButtonClick = async () => {
-        try {
-            setErrorMessage("");
+        setErrorMessage("");
 
+        try {
             const jsonData = JSON.stringify(currentData);
             const encryptedText = await encryptText(jsonData, passwordInput);
 
@@ -122,11 +124,11 @@ function App() {
                 !jsonData.people ||
                 !Array.isArray(jsonData.people)
             ) {
-                throw new Error("Decrypt sucessful, but format is invalid.");
+                throw new Error("Decrypt successful, but format is invalid.");
             }
 
             setCurrentData(jsonData);
-            sortCurrentData(); //TODO sort the json data itself before updating data
+            sortCurrentData(); // TODO: sort the parsed data once, before setting it
 
             setTextInput("");
             setFileName(null);
@@ -138,25 +140,9 @@ function App() {
         }
     };
 
-    const download = (textToDownload: string) => {
-        const blob = new Blob([textToDownload], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "passwords.txt";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    };
-
     return (
         <>
-            <div
-                id="main"
-                className="bg-primary d-flex column-gap-3 p-3 vh-100 vw-100 text-white fw-bold"
-            >
+            <main className="bg-primary d-flex column-gap-3 p-3 vh-100 vw-100 text-white fw-bold">
                 <div
                     className="d-flex flex-column row-gap-2"
                     style={{ width: "40%" }}
@@ -166,12 +152,12 @@ function App() {
                             value={textInput}
                             onChange={(e) => setTextInput(e.target.value)}
                             label="Input text"
-                        ></TextArea>
+                        />
 
                         <FileInput
                             className="ms-auto w-50"
                             fileName={fileName}
-                            accept=".txt, .json"
+                            accept=".txt,.json"
                             onChange={handleFileUpload}
                         />
 
@@ -180,8 +166,9 @@ function App() {
                             value={passwordInput}
                             variant="secondary"
                             placeholder="Decryption and encryption password"
+                            autoComplete="new-password"
                             onChange={(e) => setPasswordInput(e.target.value)}
-                        ></PasswordInput>
+                        />
                     </div>
 
                     <div className="d-flex flex-column row-gap-2 mt-2">
@@ -190,6 +177,7 @@ function App() {
                                 title="Decrypt the input text using the password"
                                 className="fs-6"
                                 variant="secondary"
+                                disabled={!textInput || !passwordInput}
                                 onClick={handleDecryptButtonClick}
                             >
                                 Decrypt
@@ -199,48 +187,39 @@ function App() {
                                 title="Encrypt the current data using the password and download it"
                                 className="fs-6"
                                 variant="secondary"
+                                disabled={!hasData || !passwordInput}
                                 onClick={handleEncryptDownloadButtonClick}
                             >
                                 Encrypt
                             </Button>
                         </div>
 
-                        <div className="d-flex w-100">
-                            <div
-                                className="fw-bold text-align-center ms-auto me-auto fs-6"
-                                style={{ height: "1.5em" }}
-                            >
-                                {errorMessage}
-                            </div>
+                        <div
+                            role="alert"
+                            className="text-center fs-6"
+                            style={{ minHeight: "1.5em" }}
+                        >
+                            {errorMessage}
                         </div>
                     </div>
                 </div>
 
                 <div className="flex-grow-1 d-flex flex-column row-gap-2 h-100">
-                    <div
-                        title="Time left before erasing data"
-                        className="fs-6 text-end"
-                        style={{
-                            visibility:
-                                currentData.people.length > 0
-                                    ? "visible"
-                                    : "hidden",
-                        }}
-                    >
-                        {timeLeft}
+                    <div className="text-end" style={{ minHeight: "1.5em" }}>
+                        {hasData && <IdleCountdown onIdle={lock} />}
                     </div>
 
-                    {currentData.people.length > 0 && (
+                    {hasData && (
                         <div className="d-flex flex-column row-gap-2 overflow-y-scroll">
                             {currentData.people.map((person) => (
                                 <PersonRow
+                                    key={person.id}
                                     defaultExpanded={
                                         person.id === newlyCreatedPersonId
                                     }
-                                    key={person.id}
                                     person={person}
                                     onSeeCodes={handleSeeCodes}
-                                ></PersonRow>
+                                />
                             ))}
                         </div>
                     )}
@@ -250,27 +229,16 @@ function App() {
                         icon={ImagePlus}
                         variant="secondary"
                         className="ms-auto"
-                        onClick={() => {
-                            if (currentData.people.length === 0) {
-                                setTimeLeft("05:00");
-                            }
-                            const newPersonId = createPerson();
-                            setNewlyCreatedPersonId(newPersonId);
-                        }}
-                    ></IconButton>
+                        onClick={() => setNewlyCreatedPersonId(createPerson())}
+                    />
                 </div>
-            </div>
+            </main>
 
             <BackupCodesPopover
-                credential={
-                    currentData.people
-                        .flatMap((p) => p.accounts)
-                        .flatMap((a) => a.credentials)
-                        .find((c) => c.id === selectedCredentialId) ?? null
-                }
-                target={popupAnchor}
-                onClose={handleClosePopup}
-            ></BackupCodesPopover>
+                credential={selectedCredential}
+                target={openCodes?.anchor ?? null}
+                onClose={() => setOpenCodes(null)}
+            />
         </>
     );
 }
