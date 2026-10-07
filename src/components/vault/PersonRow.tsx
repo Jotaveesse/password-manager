@@ -1,7 +1,7 @@
 import { useState } from "react";
-import IconButton from "../ui/IconButton.tsx";
-import EditableLabel from "../ui/EditableLabel.tsx";
-import AccountRow from "./AccountRow.tsx";
+import IconButton from "../ui/IconButton";
+import EditableLabel from "../ui/EditableLabel";
+import AccountRow from "./AccountRow";
 import ImagePlus from "../../assets/plus.svg";
 import ImageMinus from "../../assets/minus.svg";
 import DownArrow from "../../assets/down-arrow.svg";
@@ -10,7 +10,7 @@ import {
     useData,
     type Person,
     type Credential,
-} from "../../context/DataContext.tsx";
+} from "../../context/DataContext";
 
 interface PersonRowProps extends React.HTMLAttributes<HTMLDivElement> {
     person: Person;

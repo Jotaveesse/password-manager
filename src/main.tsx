@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./App.scss";
-import App from "./App.tsx";
+import App from "./App";
 import { DataProvider } from "./context/DataContext";
 
 createRoot(document.getElementById("root")!).render(

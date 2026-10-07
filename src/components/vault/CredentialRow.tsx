@@ -1,10 +1,10 @@
-import IconButton from "../ui/IconButton.tsx";
+import IconButton from "../ui/IconButton";
 import ImageSafe from "../../assets/safe.svg";
 import ImageMinus from "../../assets/minus.svg";
-import { useData, type Credential } from "../../context/DataContext.tsx";
-import TextInput from "../ui/TextInput.tsx";
-import PasswordInput from "../ui/PasswordInput.tsx";
-import CopyButton from "../ui/CopyButton.tsx";
+import { useData, type Credential } from "../../context/DataContext";
+import TextInput from "../ui/TextInput";
+import PasswordInput from "../ui/PasswordInput";
+import CopyButton from "../ui/CopyButton";
 
 interface CredentialRowProps extends React.HTMLAttributes<HTMLDivElement> {
     credential: Credential;
