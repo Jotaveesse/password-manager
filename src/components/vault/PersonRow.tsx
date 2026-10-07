@@ -1,12 +1,16 @@
 import { useState } from "react";
-import IconButton from "./IconButton.tsx";
-import EditableLabel from "./EditableLabel.tsx";
+import IconButton from "../ui/IconButton.tsx";
+import EditableLabel from "../ui/EditableLabel.tsx";
 import AccountRow from "./AccountRow.tsx";
-import ImagePlus from "../assets/plus.svg";
-import ImageMinus from "../assets/minus.svg";
-import DownArrow from "../assets/down-arrow.svg";
-import UpArrow from "../assets/up-arrow.svg";
-import { useData, type Credential, type Person } from "../DataContext.tsx";
+import ImagePlus from "../../assets/plus.svg";
+import ImageMinus from "../../assets/minus.svg";
+import DownArrow from "../../assets/down-arrow.svg";
+import UpArrow from "../../assets/up-arrow.svg";
+import {
+    useData,
+    type Person,
+    type Credential,
+} from "../../context/DataContext.tsx";
 
 interface PersonRowProps extends React.HTMLAttributes<HTMLDivElement> {
     person: Person;

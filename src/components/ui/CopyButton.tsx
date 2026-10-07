@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import IconButton from "./IconButton";
-import ImageCopy from "../assets/copy.svg";
-import ImageCheckSquare from "../assets/check-square.svg";
+import ImageCopy from "../../assets/copy.svg";
+import ImageCheckSquare from "../../assets/check-square.svg";
 
 interface CopyButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     textToCopy: string;

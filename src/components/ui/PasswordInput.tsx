@@ -1,8 +1,8 @@
 import { useId, useState } from "react";
 import Form from "react-bootstrap/Form";
 import IconButton from "./IconButton";
-import ImageEyeOpen from "../assets/eye-open.svg";
-import ImageEyeClosed from "../assets/eye-closed.svg";
+import ImageEyeOpen from "../../assets/eye-open.svg";
+import ImageEyeClosed from "../../assets/eye-closed.svg";
 
 interface PasswordInputProps extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,

@@ -1,10 +1,10 @@
-import IconButton from "./IconButton.tsx";
-import ImagePlus from "../assets/plus.svg";
-import { useData, type Credential } from "../DataContext.tsx";
+import IconButton from "../ui/IconButton";
+import ImagePlus from "../../assets/plus.svg";
+import { useData, type Credential } from "../../context/DataContext";
 import Overlay, { type OverlayProps } from "react-bootstrap/esm/Overlay";
 import Popover from "react-bootstrap/esm/Popover";
-import BackupCodesRow from "./BackupCodeRow.tsx";
-import UpdatingPopover from "./UpdatingPopover.tsx";
+import BackupCodesRow from "./BackupCodeRow";
+import UpdatingPopover from "../ui/UpdatingPopover";
 
 interface BackupCodesPopoverProps extends React.HTMLAttributes<HTMLElement> {
     credential: Credential | null;

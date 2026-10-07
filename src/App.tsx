@@ -1,15 +1,15 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import IconButton from "./components/IconButton";
+import IconButton from "./components/ui/IconButton";
 import ImagePlus from "./assets/plus.svg";
-import PasswordInput from "./components/PasswordInput";
-import FileInput from "./components/FileInput";
-import TextArea from "./components/TextArea";
-import PersonRow from "./components/PersonRow";
+import PasswordInput from "./components/ui/PasswordInput";
+import FileInput from "./components/ui/FileInput";
+import TextArea from "./components/ui/TextArea";
+import PersonRow from "./components/vault/PersonRow";
 import IdleCountdown from "./components/IdleCountdown";
-import BackupCodesPopover from "./components/BackupCodePopover";
-import { useData, type Credential, type Data } from "./DataContext";
-import { decryptText, encryptText } from "./crypter";
+import BackupCodesPopover from "./components/vault/BackupCodePopover";
+import { useData, type Credential, type Data } from "./context/DataContext";
+import { decryptText, encryptText } from "./lib/crypter";
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 

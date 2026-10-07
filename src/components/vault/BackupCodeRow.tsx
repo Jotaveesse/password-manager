@@ -1,8 +1,8 @@
-import IconButton from "./IconButton.tsx";
-import ImageMinus from "../assets/minus.svg";
-import { useData, type BackupCode } from "../DataContext.tsx";
-import PasswordInput from "./PasswordInput.tsx";
-import CopyButton from "./CopyButton.tsx";
+import IconButton from "../ui/IconButton.tsx";
+import ImageMinus from "../../assets/minus.svg";
+import { useData, type BackupCode } from "../../context/DataContext.tsx";
+import PasswordInput from "../ui/PasswordInput.tsx";
+import CopyButton from "../ui/CopyButton.tsx";
 
 interface BackupCodesRowProps extends React.HTMLAttributes<HTMLDivElement> {
     backupCode: BackupCode;

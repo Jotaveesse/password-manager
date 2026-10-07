@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useIdleTimeout } from "../useIdleTimeout";
+import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
 const TIMEOUT_MS = 5 * 60 * 1000;
 

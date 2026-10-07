@@ -1,9 +1,13 @@
-import IconButton from "./IconButton.tsx";
-import ImagePlus from "../assets/plus.svg";
-import ImageMinus from "../assets/minus.svg";
-import { useData, type Account, type Credential } from "../DataContext.tsx";
-import CredentialRow from "./CredentialRow.tsx";
-import EditableLabel from "./EditableLabel.tsx";
+import IconButton from "../ui/IconButton";
+import ImagePlus from "../../assets/plus.svg";
+import ImageMinus from "../../assets/minus.svg";
+import {
+    useData,
+    type Account,
+    type Credential,
+} from "../../context/DataContext";
+import CredentialRow from "./CredentialRow";
+import EditableLabel from "../ui/EditableLabel";
 
 interface AccountRowProps extends React.HTMLAttributes<HTMLDivElement> {
     account: Account;

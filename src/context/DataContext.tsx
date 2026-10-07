@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { FORMAT_VERSION } from "./crypter";
+import { FORMAT_VERSION } from "../lib//crypter";
 
 export type Credential = {
     id: string;
