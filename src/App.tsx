@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Button from "react-bootstrap/Button";
 import IconButton from "./components/ui/IconButton";
 import ImagePlus from "./assets/plus.svg";
+import ImageLockOpen from "./assets/lock-open.svg";
+import ImageLockClosed from "./assets/lock-closed.svg";
 import PasswordInput from "./components/ui/PasswordInput";
 import FileInput from "./components/ui/FileInput";
 import TextArea from "./components/ui/TextArea";
@@ -10,6 +11,7 @@ import IdleCountdown from "./components/IdleCountdown";
 import BackupCodesPopover from "./components/vault/BackupCodePopover";
 import { useData, type Credential, type Data } from "./context/DataContext";
 import { decryptText, encryptText } from "./lib/crypter";
+import MainButton from "./components/ui/MainButton";
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
@@ -172,26 +174,28 @@ function App() {
                     </div>
 
                     <div className="d-flex flex-column row-gap-2 mt-2">
-                        <div className="d-flex column-gap-2 justify-content-around fs-4">
-                            <Button
+                        <div className="d-flex column-gap-4 justify-content-around fs-4">
+                            <MainButton
                                 title="Decrypt the input text using the password"
-                                className="fs-6"
+                                className="flex-grow-1"
                                 variant="secondary"
-                                disabled={!textInput || !passwordInput}
+                                icon={ImageLockOpen}
+                                disabled={!textInput}
                                 onClick={handleDecryptButtonClick}
                             >
                                 Decrypt
-                            </Button>
+                            </MainButton>
 
-                            <Button
+                            <MainButton
                                 title="Encrypt the current data using the password and download it"
-                                className="fs-6"
+                                className="flex-grow-1"
                                 variant="secondary"
+                                icon={ImageLockClosed}
                                 disabled={!hasData || !passwordInput}
                                 onClick={handleEncryptDownloadButtonClick}
                             >
                                 Encrypt
-                            </Button>
+                            </MainButton>
                         </div>
 
                         <div
