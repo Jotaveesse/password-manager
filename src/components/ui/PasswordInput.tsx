@@ -35,11 +35,13 @@ const PasswordInput = ({
     const [showingPassword, setShowingPassword] = useState(false);
 
     const variantClass = variant === "primary" ? "bg-primary" : "bg-secondary";
+    const wrapperVariant =
+        variant === "primary" ? "bg-secondary" : "bg-primary";
 
     return (
         <Form.Group
             controlId={inputId}
-            className={`${horizontalLayout ? HORIZONTAL : VERTICAL} ${className ?? ""}`}
+            className={`${horizontalLayout ? HORIZONTAL : VERTICAL} ${wrapperVariant} rounded-3 ${className ?? ""}`}
             style={style}
         >
             {label && (

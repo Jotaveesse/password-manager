@@ -146,10 +146,10 @@ function App() {
         <>
             <main className="bg-primary d-flex column-gap-3 p-3 vh-100 vw-100 text-white fw-bold">
                 <div
-                    className="d-flex flex-column row-gap-2"
+                    className="d-flex flex-column row-gap-3"
                     style={{ width: "40%" }}
                 >
-                    <div className="flex-grow-1 d-flex flex-column row-gap-2">
+                    <div className="flex-grow-1 d-flex flex-column row-gap-3">
                         <TextArea
                             value={textInput}
                             onChange={(e) => setTextInput(e.target.value)}
@@ -166,7 +166,8 @@ function App() {
                         <PasswordInput
                             label="Password"
                             value={passwordInput}
-                            variant="secondary"
+                            variant="primary"
+                            className="p-2"
                             placeholder="Decryption and encryption password"
                             autoComplete="new-password"
                             onChange={(e) => setPasswordInput(e.target.value)}
